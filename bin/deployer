@@ -44,11 +44,11 @@ main()
   # Update the inactive checkout with git.
   # Exit with special status 100 if there are no updates.
   # Run the tail program (typically just `make`) to do post-update tasks.
-  # FIXME support revision, below code assumes current branch.
+  # FIXME need to diff HEAD from active checkout with revision from new.
   (
     safe cd "${deploy_root}/${target_new}"
     safe git fetch
-    git diff --exit-code HEAD @{u} >/dev/null
+    git diff --exit-code HEAD origin/"$revision" >/dev/null
     case $? in
       0) 
         log 1 "no new updates for the current branch."
@@ -57,7 +57,7 @@ main()
       1)
         log 1 "updating."
         git stash
-        safe git reset --hard @{u}
+        safe git reset --hard origin/"$revision"
         ;;
       *)
         barf "git-diff failed with exit code: $?"
