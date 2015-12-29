@@ -1,0 +1,95 @@
+#!/bin/sh
+
+usage() { echo "usage: ${0##*/} <deploy_root> <unit> <revision> <program>"; }
+
+main()
+{
+  if [ $# -lt 4 ]; then
+    usage 1>&2
+    exit 1
+  fi
+
+  deploy_root="$1" ; shift
+  unit="$1"        ; shift
+  revision="$1"    ; shift
+
+  # FIXME validate unit for safe chars
+
+  path_a="${deploy_root}/${unit}.a"
+  path_b="${deploy_root}/${unit}.b"
+
+  test -d "$path_a" || barf "missing git checkout: $path_a"
+  test -d "$path_b" || barf "missing git checkout: $path_b"
+
+  path_symlink="${deploy_root}/${unit}"
+
+  # Determine the currently active checkout for this unit.
+
+  if [ -L "$path_symlink" ]; then
+    target_old=`readlink "$path_symlink"`
+  elif [ -e "$path_symlink" ]; then
+    barf "non-symlink at: $path_symlink"
+  else
+    target_old="${unit}.b"
+  fi
+
+  # Determine the currently inactive checkout for this unit.
+
+  if [ "$target_old" = "${unit}.a" ]; then
+    target_new="${unit}.b"
+  else
+    target_new="${unit}.a"
+  fi
+
+  # Update the inactive checkout with git.
+  # Exit with special status 100 if there are no updates.
+  # Run the tail program (typically just `make`) to do post-update tasks.
+  # FIXME support revision, below code assumes current branch.
+  (
+    safe cd "${deploy_root}/${target_new}"
+    safe git fetch
+    git diff --exit-code HEAD @{u} >/dev/null
+    case $? in
+      0) 
+        log 1 "no new updates for the current branch."
+        exit 100
+        ;;
+      1)
+        log 1 "updating."
+        git stash
+        safe git reset --hard @{u}
+        ;;
+      *)
+        barf "git-diff failed with exit code: $?"
+        ;;
+    esac
+    safe "$@"
+    safe touch .deployed
+  )
+  rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
+
+  # Create the new symlink under the tmp/ dir.
+
+  safe ln -s "$target_new" "${deploy_root}/tmp/${unit}"
+
+  # Atomically move new symlink into place.
+
+  (
+    safe cd "${deploy_root}/tmp"
+    safe mv "$unit" ..
+  )
+  rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
+
+  log 2 "switched active checkout to: ${target_new}"
+
+  return 0
+}
+
+log()   { level="$1" ; shift ; echo "${0##*/}/$$: {L$level} $*" 1>&2; }
+shout() { log 1 "$@"; }
+barf()  { log 0 "$@"; exit 111; }
+safe()  { "$@" || barf "cannot $*"; }
+
+main "$@"
+exit $?
+
