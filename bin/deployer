@@ -56,11 +56,11 @@ main()
     git diff --exit-code "$revision_old" origin/"$revision" >/dev/null
     case $? in
       0) 
-        log 1 "no new updates for the current branch."
+        log 2 "no changes for: ${target_new} ${revision}"
         exit 100
         ;;
       1)
-        log 1 "updating."
+        log 2 "applying changes to inactive checkout: ${target_new}"
         git stash
         safe git checkout --detach origin/"$revision"
         ;;
