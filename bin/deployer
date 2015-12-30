@@ -1,10 +1,10 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} <deploy_root> <unit> <revision> <program>"; }
+usage() { echo "usage: ${0##*/} <deploy_root> <unit> <revision> [<program>]"; }
 
 main()
 {
-  if [ $# -lt 4 ]; then
+  if [ $# -lt 3 ]; then
     usage 1>&2
     exit 1
   fi
@@ -68,7 +68,7 @@ main()
         barf "git-diff failed with exit code: $?"
         ;;
     esac
-    safe "$@"
+    test $# -eq 0 || safe "$@"
     safe touch .deployed
   )
   rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
