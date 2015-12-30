@@ -41,34 +41,39 @@ main()
     target_new="${unit}.a"
   fi
 
-  export GIT_CEILING_DIRECTORIES="$deploy_root"
-
   # Determine the currently active revision.
-  revision_old=`safe cd "${deploy_root}/${target_old}" && safe git rev-parse HEAD`
+
+  path_old="${deploy_root}/${target_old}"
+  export GIT_WORK_TREE="$path_old"
+  export GIT_DIR="${path_old}/.git"
+  revision_old=`safe git rev-parse HEAD`
   test -n "$revision_old" || barf "error getting current revision for: ${target_old}"
 
   # Update the inactive checkout with git.
   # Exit with special status 100 if it would be identical to the active checkout.
   # Run the tail program (typically just `make`) to do post-update tasks.
 
+  path_new="${deploy_root}/${target_new}"
+  export GIT_WORK_TREE="$path_new"
+  export GIT_DIR="${path_new}/.git"
+  safe git fetch
+  git diff --exit-code "$revision_old" origin/"$revision" >/dev/null
+  case $? in
+    0)
+      log 2 "no changes for: ${target_new} ${revision}"
+      exit 100
+      ;;
+    1)
+      log 2 "applying changes to inactive checkout: ${target_new}"
+      git stash
+      safe git checkout --detach origin/"$revision"
+      ;;
+    *)
+      barf "git-diff failed with exit code: $?"
+      ;;
+  esac
   (
-    safe cd "${deploy_root}/${target_new}"
-    safe git fetch
-    git diff --exit-code "$revision_old" origin/"$revision" >/dev/null
-    case $? in
-      0) 
-        log 2 "no changes for: ${target_new} ${revision}"
-        exit 100
-        ;;
-      1)
-        log 2 "applying changes to inactive checkout: ${target_new}"
-        git stash
-        safe git checkout --detach origin/"$revision"
-        ;;
-      *)
-        barf "git-diff failed with exit code: $?"
-        ;;
-    esac
+    safe cd "$path_new"
     test $# -eq 0 || safe "$@"
     safe touch .deployed
   )
