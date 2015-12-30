@@ -41,8 +41,9 @@ main()
     target_new="${unit}.a"
   fi
 
-  # Determine the currently active revision.
+  export GIT_CEILING_DIRECTORIES="$deploy_root"
 
+  # Determine the currently active revision.
   revision_old=`safe cd "${deploy_root}/${target_old}" && safe git rev-parse HEAD`
   test -n "$revision_old" || barf "error getting current revision for: ${target_old}"
 
