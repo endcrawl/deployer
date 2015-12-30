@@ -41,12 +41,15 @@ main()
     target_new="${unit}.a"
   fi
 
+  # Determine the currently active revision.
+
   revision_old=`safe cd "${deploy_root}/${target_old}" && safe git rev-parse HEAD`
   test -n "$revision_old" || barf "error getting current revision for: ${target_old}"
 
   # Update the inactive checkout with git.
-  # Exit with special status 100 if there are no updates.
+  # Exit with special status 100 if it would be identical to the active checkout.
   # Run the tail program (typically just `make`) to do post-update tasks.
+
   (
     safe cd "${deploy_root}/${target_new}"
     safe git fetch
@@ -74,7 +77,7 @@ main()
 
   safe ln -s "$target_new" "${deploy_root}/tmp/${unit}"
 
-  # Atomically move new symlink into place.
+  # Atomically move the new symlink into place.
 
   (
     safe cd "${deploy_root}/tmp"
