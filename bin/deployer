@@ -51,7 +51,6 @@ main()
 
   # Update the inactive checkout with git.
   # Exit with special status 100 if it would be identical to the active checkout.
-  # Run the tail program (typically just `make`) to do post-update tasks.
 
   path_new="${deploy_root}/${target_new}"
   export GIT_WORK_TREE="$path_new"
@@ -72,6 +71,10 @@ main()
       barf "git-diff failed with exit code: $?"
       ;;
   esac
+
+  # Run the tail program (typically just `make`) to do post-update tasks.
+  # Touch a file to indicate that a new deployment happened.
+
   (
     safe cd "$path_new"
     test $# -eq 0 || safe "$@"
