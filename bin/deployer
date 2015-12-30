@@ -41,9 +41,11 @@ main()
     target_new="${unit}.a"
   fi
 
+  path_old="${deploy_root}/${target_old}"
+  path_new="${deploy_root}/${target_new}"
+
   # Determine the currently active revision.
 
-  path_old="${deploy_root}/${target_old}"
   export GIT_WORK_TREE="$path_old"
   export GIT_DIR="${path_old}/.git"
   revision_old=`safe git rev-parse HEAD`
@@ -52,7 +54,6 @@ main()
   # Update the inactive checkout with git.
   # Exit with special status 100 if it would be identical to the active checkout.
 
-  path_new="${deploy_root}/${target_new}"
   export GIT_WORK_TREE="$path_new"
   export GIT_DIR="${path_new}/.git"
   safe git fetch
