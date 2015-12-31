@@ -4,3 +4,4 @@ if [ $FSQ_STATUS -eq 111 -a -n "$DEPLOYER_TRIGGER" -a "$DEPLOYER_RETRY_DELAY" -g
   sleep "$DEPLOYER_RETRY_DELAY" && trigger-pull "$DEPLOYER_TRIGGER" &
 fi
 exit 0
+

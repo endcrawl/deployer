@@ -2,3 +2,4 @@
 . "$DEPLOYER_CONFIG"
 exec trigger-listen -v -1 -c "$DEPLOYER_CONCURRENCY" "$DEPLOYER_TRIGGER" \
   sh -e -c '. "$0" ; cd "$DEPLOYER_QUEUE" ; exec "$@"' "$DEPLOYER_CONFIG" deployer-queue
+
