@@ -1,0 +1,52 @@
+#!/bin/sh
+
+main()
+{
+  # Parse data out of the job file name.
+
+  jobname="$FSQ_JOB"
+  jobdate="${jobname%%.*}"   ; jobname="${jobname#*.}"
+  jobtime="${jobname%%.*}"   ; jobname="${jobname#*.}"
+  jobrandom="${jobname%%.*}" ; jobname="${jobname#*.}"
+  unit="${jobname%%.*}"      ; jobname="${jobname#*.}"
+  revision="${jobname%%.*}"  ; jobname="${jobname#*.}"
+
+  [ -z "$unit"     ] && barf "cannot parse unit from jobfile: $FSQ_JOB" 100
+  [ -z "$revision" ] && barf "cannot parse revision from jobfile: $FSQ_JOB" 100
+
+  # Only one deploy is allowed to run at a time for a given unit.
+  # Grab the per-unit lock, or fail immediately if already locked.
+  # On lock success, record it with an env var and re-execute self.
+
+  export LOCKED_UNIT
+
+  if [ -z "$LOCKED_UNIT" ]; then
+    lockfile="$DEPLOYER_LOCK_DIR"/unit/"$unit".lock
+    LOCKED_UNIT="$lockfile" safe exec setlock -n "$lockfile" "$0" "$@"
+  else
+    shout "locked: $LOCKED_UNIT"
+  fi
+
+  # Got all necessary locks. Invoke the deployer.
+
+  deployer "$DEPLOYER_DEPLOY_ROOT" "$unit" "$revision"
+  rc=$?
+
+  # On successful deployment, pull the bouncer's trigger.
+
+  [ "$rc" -eq 0 -a -n "$DEPLOYER_BOUNCER_TRIGGER" ] && trigger-pull "$DEPLOYER_BOUNCER_TRIGGER"
+
+  # Ignore an exit code of 99 = there was nothing to deploy.
+
+  [ $rc -eq 99 ] && rc=0
+  return $rc
+}
+
+log()   { level="$1" ; shift ; echo "${0##*/}/$$: {L$level} $*" 1>&2; }
+shout() { log 1 "$@"; }
+barf()  { log 0 "$1"; test $# -gt 1 && exit $2 || exit 111; }
+safe()  { "$@" || barf "cannot $*" $?; }
+
+main "$@"
+exit $?
+
