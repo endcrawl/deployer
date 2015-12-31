@@ -16,8 +16,7 @@ main()
   # Validate unit against unsafe path chars.
 
   test -z "$unit"               && barf "invalid unit: $unit"
-  test "$unit"  = "."           && barf "invalid unit: $unit"
-  test "$unit"  = ".."          && barf "invalid unit: $unit"
+  test "$unit" != "${unit##*.}" && barf "invalid unit: $unit"
   test "$unit" != "${unit##*/}" && barf "invalid unit: $unit"
 
   # Require existing a & b directories.
