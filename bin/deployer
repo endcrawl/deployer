@@ -59,7 +59,7 @@ main()
   test -n "$revision_old" || barf "error getting current revision for: ${target_old}"
 
   # Update the inactive checkout with git.
-  # Exit with special status 100 if it would be identical to the active checkout.
+  # Exit with special status if it would be identical to the active checkout.
 
   export GIT_WORK_TREE="$path_new"
   export GIT_DIR="${path_new}/.git"
@@ -68,7 +68,7 @@ main()
   case $? in
     0)
       log 2 "no changes for: ${target_new} ${revision}"
-      exit 100
+      exit 99
       ;;
     1)
       log 2 "applying changes to inactive checkout: ${target_new}"
