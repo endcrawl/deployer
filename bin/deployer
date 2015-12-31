@@ -13,7 +13,14 @@ main()
   unit="$1"        ; shift
   revision="$1"    ; shift
 
-  # FIXME validate unit for safe chars
+  # Validate unit against unsafe path chars.
+
+  test -z "$unit"               && barf "invalid unit: $unit"
+  test "$unit"  = "."           && barf "invalid unit: $unit"
+  test "$unit"  = ".."          && barf "invalid unit: $unit"
+  test "$unit" != "${unit##*/}" && barf "invalid unit: $unit"
+
+  # Require existing a & b directories.
 
   path_a="${deploy_root}/${unit}.a"
   path_b="${deploy_root}/${unit}.b"
@@ -21,9 +28,9 @@ main()
   test -d "$path_a" || barf "missing git checkout: $path_a"
   test -d "$path_b" || barf "missing git checkout: $path_b"
 
-  path_symlink="${deploy_root}/${unit}"
-
   # Determine the currently active checkout for this unit.
+
+  path_symlink="${deploy_root}/${unit}"
 
   if [ -L "$path_symlink" ]; then
     target_old=`readlink "$path_symlink"`
