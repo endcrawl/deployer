@@ -20,13 +20,24 @@ main()
     test "$a" != "${a##*/}" && barf "invalid unit or revision: $a"
   done
 
+  # Source config files from somewhere.
+
+  for conf in /etc/deployer.conf /usr/local/etc/deployer.conf /opt/local/etc/deployer.conf "$HOME"/deployer.conf; do
+    if [ -f "$conf" ]; then
+      safe . "$conf"
+    fi
+  done
+
+  test -z "$DEPLOYER_QUEUE"   && barf "missing environment variable: DEPLOYER_QUEUE"
+  test -z "$DEPLOYER_TRIGGER" && barf "missing environment variable: DEPLOYER_TRIGGER"
+
   # Generate the job file name.
 
   jobdatetime=`date +%Y%m%d.%H%M%S`
   jobrandom=`od -N 4 -t x4 -A n -v < /dev/urandom | sed -e 's/^ //'`
   jobname="${jobdatetime}.${jobrandom}.${unit}.${revision}"
 
-  # TODO get these env variables from somewhere. where?
+  # Enqueue a new job file.
 
   safe touch "$DEPLOYER_QUEUE/tmp/$jobname"
   safe mv    "$DEPLOYER_QUEUE/tmp/$jobname" "$DEPLOYER_QUEUE/new/$jobname"
