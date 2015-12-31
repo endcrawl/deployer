@@ -1,0 +1,2 @@
+#!/bin/sh
+exec fsq-run -v -Q new -D cur -A deployer-after-job . deployer-worker

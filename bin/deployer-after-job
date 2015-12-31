@@ -1,0 +1,6 @@
+#!/bin/sh
+# When a job exits 111 (temporary failure), retry by triggering queue processing again after a delay.
+if [ $FSQ_STATUS -eq 111 -a -n "$DEPLOYER_TRIGGER" -a "$DEPLOYER_RETRY_DELAY" -gt 0 ]; then
+  sleep "$DEPLOYER_RETRY_DELAY" && trigger-pull "$DEPLOYER_TRIGGER" &
+fi
+exit 0

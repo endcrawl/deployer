@@ -1,5 +1,4 @@
 #!/bin/sh
 . "$DEPLOYER_CONFIG"
 exec trigger-listen -v -1 -c "$DEPLOYER_CONCURRENCY" "$DEPLOYER_TRIGGER" \
-  sh -e -c '. "$0" ; exec "$@"' "$DEPLOYER_CONFIG" \
-    fsq-run -v -Q new -D cur . deployer-worker
+  sh -e -c '. "$0" ; cd "$DEPLOYER_QUEUE" ; exec "$@"' "$DEPLOYER_CONFIG" deployer-queue
