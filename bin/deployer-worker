@@ -42,7 +42,7 @@ main()
   return $rc
 }
 
-. deployer-shlib
+. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
 main "$@"
 exit $?
 
