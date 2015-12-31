@@ -13,11 +13,13 @@ main()
   unit="$1"        ; shift
   revision="$1"    ; shift
 
-  # Validate unit against unsafe path chars.
+  # Validate unit and revision against unsafe path chars.
 
-  test -z "$unit"               && barf "invalid unit: $unit"
-  test "$unit" != "${unit##*.}" && barf "invalid unit: $unit"
-  test "$unit" != "${unit##*/}" && barf "invalid unit: $unit"
+  for a in "$unit" "$revision"; do
+    test -z "$a"            && barf "missing unit or revision"
+    test "$a" != "${a##*.}" && barf "invalid unit or revision: $a"
+    test "$a" != "${a##*/}" && barf "invalid unit or revision: $a"
+  done
 
   # Require existing a & b directories.
 
