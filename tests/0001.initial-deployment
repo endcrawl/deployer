@@ -13,6 +13,8 @@ export DEPLOYER_RETRY_DELAY=0
 
 . deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
 
+# Setup: create deployer directories.
+
 safe mkdir -p "$tmpdir"
 safe mkdir -p "$DEPLOYER_QUEUE/tmp"
 safe mkdir -p "$DEPLOYER_QUEUE/new"
@@ -20,6 +22,9 @@ safe mkdir -p "$DEPLOYER_QUEUE/cur"
 safe mkdir -p "$DEPLOYER_LOCK_DIR/unit"
 safe mkdir -p "$DEPLOYER_DEPLOY_ROOT/tmp"
 safe mkfifo "$DEPLOYER_TRIGGER"
+
+# Setup: create a new git repository.
+
 safe mkdir -p "$tmpdir/foo"
 (
   safe cd "$tmpdir/foo"
@@ -29,8 +34,14 @@ safe mkdir -p "$tmpdir/foo"
   safe git commit -m 1
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Setup: create the initial deployer a & b checkouts.
+
 safe git clone "$tmpdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.a"
 safe git clone "$tmpdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.b"
+
+# Setup: make a new commit to the soure git repository.
+
 (
   safe cd "$tmpdir/foo"
   safe touch 2.txt
@@ -38,12 +49,21 @@ safe git clone "$tmpdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.b"
   safe git commit -m 1
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Test: request a new deployment (inject a job file into the queue).
+
 safe deploy foo master
+
+# Test: run a deployment queue pass, which should process all jobs.
+
 (
   safe cd "$DEPLOYER_QUEUE"
   safe deployer-queue 
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Test: check that the initial deployment worked and got the latest commit.
+
 (
   safe cd "$DEPLOYER_DEPLOY_ROOT"
   safe test -L foo
@@ -51,5 +71,6 @@ rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
   safe test -f foo/2.txt
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
 exit 0
 
