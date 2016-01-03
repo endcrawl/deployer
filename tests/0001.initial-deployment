@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# FIXME maybe use mktemp or something
+tmpdir="$PWD"/tmp
+
+export DEPLOYER_CONFIG=/dev/null
+export DEPLOYER_QUEUE="$tmpdir"/queue
+export DEPLOYER_TRIGGER="$tmpdir"/trigger.fifo
+export DEPLOYER_LOCK_DIR="$tmpdir"/lock
+export DEPLOYER_DEPLOY_ROOT="$tmpdir"/deploys
+export DEPLOYER_CONCURRENCY=1
+export DEPLOYER_RETRY_DELAY=0
+
+. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+
+safe mkdir -p "$tmpdir"
+safe mkdir -p "$DEPLOYER_QUEUE/tmp"
+safe mkdir -p "$DEPLOYER_QUEUE/new"
+safe mkdir -p "$DEPLOYER_QUEUE/cur"
+safe mkdir -p "$DEPLOYER_LOCK_DIR/unit"
+safe mkdir -p "$DEPLOYER_DEPLOY_ROOT/tmp"
+safe mkfifo "$DEPLOYER_TRIGGER"
+safe mkdir -p "$tmpdir/foo"
+(
+  safe cd "$tmpdir/foo"
+  safe git init .
+  safe touch 1.txt
+  safe git add 1.txt
+  safe git commit -m 1
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+safe git clone "$tmpdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.a"
+safe git clone "$tmpdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.b"
+(
+  safe cd "$tmpdir/foo"
+  safe touch 2.txt
+  safe git add 2.txt
+  safe git commit -m 1
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+safe deploy foo master
+(
+  safe cd "$DEPLOYER_QUEUE"
+  safe deployer-queue 
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+(
+  safe cd "$DEPLOYER_DEPLOY_ROOT"
+  safe test -L foo
+  safe test "`readlink foo`" = "foo.a"
+  safe test -f foo/2.txt
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+exit 0
+
