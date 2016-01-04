@@ -2,12 +2,15 @@ TEST_CASES   = $(shell find case -type f | sort)
 TEST_OUTPUTS = ${TEST_CASES:case/%=out/%}
 
 
-default : $(TEST_OUTPUTS)
+default : tests
+
+tests : reset-tests $(TEST_OUTPUTS)
+
+reset-tests :
+	@ rm -f pass/* fail/*
 
 out/% : case/%
 	@ printf "[test] %-32s ... " $*
-	@ rm -f pass/$*
-	@ rm -f fail/$*
 	@ if $^ "$(CURDIR)"/work/$* >$@ 2>&1; then \
 	    printf "pass\n" ; \
 	    touch pass/$* ; \
