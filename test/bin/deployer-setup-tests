@@ -27,6 +27,8 @@ safe mkdir -p "$workdir/foo"
 (
   safe cd "$workdir/foo"
   safe git init .
+  safe echo "all : " > Makefile
+  safe git add Makefile
   safe touch 1.txt
   safe git add 1.txt
   safe git commit -m 1
