@@ -6,6 +6,13 @@ default : $(TEST_OUTPUTS)
 
 out/% : case/%
 	@ printf "[test] %s ... " $*
-	@ $^ "$(CURDIR)"/work/$* >$@ 2>&1
-	@ printf "pass\n"
+	@ rm -f {pass,fail}/$*
+	@ if $^ "$(CURDIR)"/work/$* >$@ 2>&1; then \
+	    printf "pass\n" ; \
+	    touch pass/$* ; \
+	  else \
+	    printf "fail\n" ; \
+	    touch fail/$* ; \
+	    exit 111 ; \
+	  fi
 
