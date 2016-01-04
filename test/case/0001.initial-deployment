@@ -2,45 +2,11 @@
 
 . deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
 
-workdir="$1" ; shift
+workdir="$1" ; shift ; export workdir
 
-export DEPLOYER_CONFIG=/dev/null
-export DEPLOYER_QUEUE="$workdir"/queue
-export DEPLOYER_TRIGGER="$workdir"/trigger.fifo
-export DEPLOYER_LOCK_DIR="$workdir"/lock
-export DEPLOYER_DEPLOY_ROOT="$workdir"/deploys
-export DEPLOYER_CONCURRENCY=1
-export DEPLOYER_RETRY_DELAY=0
+safe . deployer-setup-tests
 
-# Setup: create deployer directories.
-
-safe rm -rf "$workdir"
-safe mkdir -p "$workdir"
-safe mkdir -p "$DEPLOYER_QUEUE/tmp"
-safe mkdir -p "$DEPLOYER_QUEUE/new"
-safe mkdir -p "$DEPLOYER_QUEUE/cur"
-safe mkdir -p "$DEPLOYER_LOCK_DIR/unit"
-safe mkdir -p "$DEPLOYER_DEPLOY_ROOT/tmp"
-safe mkfifo "$DEPLOYER_TRIGGER"
-
-# Setup: create a new git repository.
-
-safe mkdir -p "$workdir/foo"
-(
-  safe cd "$workdir/foo"
-  safe git init .
-  safe touch 1.txt
-  safe git add 1.txt
-  safe git commit -m 1
-)
-rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
-
-# Setup: create the initial deployer a & b checkouts.
-
-safe git clone "$workdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.a"
-safe git clone "$workdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.b"
-
-# Setup: make a new commit to the soure git repository.
+# Test: make a new commit to the source git repository.
 
 (
   safe cd "$workdir/foo"
