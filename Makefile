@@ -6,5 +6,5 @@ export PATH
 default :
 
 check :
-	@ $(MAKE) -k -C test ; rc=$$? ; $(MAKE) -C test report ; exit $$rc
+	@ $(MAKE) -k --no-print-directory -C test ; rc=$$? ; $(MAKE) --no-print-directory -C test report ; exit $$rc
 
