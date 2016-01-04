@@ -1,7 +1,14 @@
 #!/bin/sh
 
-# FIXME maybe use mktemp or something
-tmpdir="$PWD"/tmp
+. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+
+cleanup() { rm -rf "$tmpdir"; }
+
+safe mkdir -p "$PWD/tmp"
+tmpdir=`mktemp -d "$PWD/tmp/${0##*/}.XXXXXX"`
+safe test -n "$tmpdir"
+safe test -d "$tmpdir"
+trap cleanup 0
 
 export DEPLOYER_CONFIG=/dev/null
 export DEPLOYER_QUEUE="$tmpdir"/queue
@@ -10,8 +17,6 @@ export DEPLOYER_LOCK_DIR="$tmpdir"/lock
 export DEPLOYER_DEPLOY_ROOT="$tmpdir"/deploys
 export DEPLOYER_CONCURRENCY=1
 export DEPLOYER_RETRY_DELAY=0
-
-. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
 
 # Setup: create deployer directories.
 
