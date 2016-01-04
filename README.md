@@ -7,7 +7,8 @@ More documentation to come.
 Requirements:
 
 - `git`
-- `trigger-listen` and `trigger-pull`
+- `setlock` from `daemontools`
+- `trigger-listen` and `trigger-pull` from `trigger`
 - `fsq-run`
 
 See that tests pass:
