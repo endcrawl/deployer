@@ -11,8 +11,9 @@ out/% : case/%
 	    printf "pass\n" ; \
 	    touch pass/$* ; \
 	  else \
+	    rc=$$? ; \
 	    printf "fail\n" ; \
 	    touch fail/$* ; \
-	    exit 111 ; \
+	    exit $$rc ; \
 	  fi
 
