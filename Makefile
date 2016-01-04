@@ -7,14 +7,14 @@ default :
 
 check : tests
 
-TESTS_IN  = $(shell find tests -type f )
-TESTS_OUT = ${TESTS_IN:tests/%=tests.out/%}
+TEST_CASES   = $(shell find test/case -type f | sort)
+TEST_OUTPUTS = ${TEST_CASES:test/case/%=test/out/%}
 
-tests : $(TESTS_OUT)
+tests : $(TEST_OUTPUTS)
 
-tests.out/% : tests/%
-	@ mkdir -p tests.out
-	@ printf "[test] %s ... " "$*"
-	@ $^ >$@ 2>&1
+test/out/% : test/case/%
+	@ mkdir -p test/work/$*
+	@ printf "[test] %s ... " $*
+	@ $^ test/work/$* >$@ 2>&1
 	@ printf "pass\n"
 
