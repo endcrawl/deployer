@@ -5,7 +5,7 @@ TEST_OUTPUTS = ${TEST_CASES:case/%=out/%}
 default : $(TEST_OUTPUTS)
 
 out/% : case/%
-	@ printf "[test] %s ... " $*
+	@ printf "[test] %-32s ... " $*
 	@ rm -f {pass,fail}/$*
 	@ if $^ "$(CURDIR)"/work/$* >$@ 2>&1; then \
 	    printf "pass\n" ; \
