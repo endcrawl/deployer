@@ -1,0 +1,31 @@
+#!/bin/sh
+
+main()
+{
+  test -z "$DEPLOYER_QUEUE"          && barf "missing environment variable: DEPLOYER_QUEUE"
+  test -z "$DEPLOYER_TRIGGER"        && barf "missing environment variable: DEPLOYER_TRIGGER"
+  test -z "$DEPLOYER_LOCK_DIR"       && barf "missing environment variable: DEPLOYER_LOCK_DIR"
+  test -z "$DEPLOYER_DEPLOY_ROOT"    && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
+  test "$DEPLOYER_CONCURRENCY" -ge 0 || barf "invalid environment variable: DEPLOYER_CONCURRENCY"
+  test "$DEPLOYER_RETRY_DELAY" -ge 0 || barf "invalid environment variable: DEPLOYER_RETRY_DELAY"
+
+  safe mkdir -p "$DEPLOYER_QUEUE"
+  safe mkdir -p "$DEPLOYER_QUEUE/tmp"
+  safe mkdir -p "$DEPLOYER_QUEUE/cur"
+  safe mkdir -p "$DEPLOYER_QUEUE/new"
+  safe mkdir -p "$DEPLOYER_LOCK_DIR"
+  safe mkdir -p "$DEPLOYER_DEPLOY_ROOT"
+
+  test -p "$DEPLOYER_TRIGGER" || {
+    dir=`dirname "$DEPLOYER_TRIGGER"`
+    safe mkdir -p "$dir"
+    safe mkfifo "$DEPLOYER_TRIGGER"
+  }
+
+  return 0
+}
+
+. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+main "$@"
+exit $?
+
