@@ -79,7 +79,8 @@ main()
       ;;
     1)
       log 2 "applying changes to inactive checkout: ${target_new}"
-      git stash
+      # XXX workaround: git-stash doesn't honor GIT_WORK_TREE / GIT_DIR as of 1.9.1
+      ( safe cd "$GIT_WORK_TREE" && git stash )
       safe git checkout --detach origin/"$revision"
       ;;
     *)
