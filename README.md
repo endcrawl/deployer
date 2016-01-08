@@ -63,9 +63,9 @@ tail -n 100 -f /var/service/deployer/log/main/current
 - [x] `deployer-manage` should create the initial symlink.
 - [x] `deployer` should take one less argument and get deploy root from env.
 - [x] `deployer-queue` should take one less argument and cd to the queue dir specified by env.
-- [ ] make `trigger-pull` quieter if nothing's listening on the fifo:
+- [x] make `trigger-pull` quieter if nothing's listening on the fifo:
   - `trigger-pull: fatal: cannot open var/lib/deployer/trigger.fifo: device not configured`
-- [ ] eliminate the `git stash` warning:
+- [x] eliminate the `git stash` warning:
   - fatal: /usr/lib/git-core/git-stash cannot be used without a working tree.
 
 
