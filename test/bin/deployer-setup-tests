@@ -10,16 +10,11 @@ export DEPLOYER_DEPLOY_ROOT="$workdir"/deploys
 export DEPLOYER_CONCURRENCY=1
 export DEPLOYER_RETRY_DELAY=0
 
-# Setup: create deployer directories.
+# Deployer setup.
 
 safe rm -rf "$workdir"
 safe mkdir -p "$workdir"
-safe mkdir -p "$DEPLOYER_QUEUE/tmp"
-safe mkdir -p "$DEPLOYER_QUEUE/new"
-safe mkdir -p "$DEPLOYER_QUEUE/cur"
-safe mkdir -p "$DEPLOYER_LOCK_DIR/unit"
-safe mkdir -p "$DEPLOYER_DEPLOY_ROOT/tmp"
-safe mkfifo "$DEPLOYER_TRIGGER"
+safe deployer-init
 
 # Setup: create a new git repository.
 
@@ -37,6 +32,5 @@ rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
 # Setup: create the initial deployer a & b checkouts.
 
-safe git clone "$workdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.a"
-safe git clone "$workdir/foo" "$DEPLOYER_DEPLOY_ROOT/foo.b"
+safe deployer-manage foo "$workdir/foo"
 
