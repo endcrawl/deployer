@@ -6,6 +6,7 @@ export DEPLOYER_CONFIG=/dev/null
 export DEPLOYER_QUEUE="$workdir"/queue
 export DEPLOYER_TRIGGER="$workdir"/trigger.fifo
 export DEPLOYER_LOCK_DIR="$workdir"/lock
+export DEPLOYER_BOUNCED_DIR="$workdir"/bounced
 export DEPLOYER_DEPLOY_ROOT="$workdir"/deploys
 export DEPLOYER_CONCURRENCY=1
 export DEPLOYER_RETRY_DELAY=0

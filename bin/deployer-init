@@ -5,6 +5,7 @@ main()
   test -z "$DEPLOYER_QUEUE"          && barf "missing environment variable: DEPLOYER_QUEUE"
   test -z "$DEPLOYER_TRIGGER"        && barf "missing environment variable: DEPLOYER_TRIGGER"
   test -z "$DEPLOYER_LOCK_DIR"       && barf "missing environment variable: DEPLOYER_LOCK_DIR"
+  test -z "$DEPLOYER_BOUNCED_DIR"    && barf "missing environment variable: DEPLOYER_BOUNCED_DIR"
   test -z "$DEPLOYER_DEPLOY_ROOT"    && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test "$DEPLOYER_CONCURRENCY" -ge 0 || barf "invalid environment variable: DEPLOYER_CONCURRENCY"
   test "$DEPLOYER_RETRY_DELAY" -ge 0 || barf "invalid environment variable: DEPLOYER_RETRY_DELAY"
@@ -14,6 +15,7 @@ main()
   safe mkdir -p "$DEPLOYER_QUEUE/cur"
   safe mkdir -p "$DEPLOYER_QUEUE/new"
   safe mkdir -p "$DEPLOYER_LOCK_DIR/unit"
+  safe mkdir -p "$DEPLOYER_BOUNCED_DIR"
   safe mkdir -p "$DEPLOYER_DEPLOY_ROOT/tmp"
 
   test -p "$DEPLOYER_TRIGGER" || {
