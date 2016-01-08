@@ -25,6 +25,7 @@ main()
     test -L "$svcdir/root" || continue
     test -e "$svcdir/root/.deployed" || continue
     test "$DEPLOYER_BOUNCED_DIR/$svcname" -nt "$svcdir/root/.deployed" && continue
+    log 2 "bouncing: $svcname"
     (
       safe cd "$svcdir"
       if [ -x bounce ]; then
