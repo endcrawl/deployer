@@ -55,7 +55,7 @@ rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 (
   safe cd "$DEPLOYER_DEPLOY_ROOT"
   safe test -L foo
-  safe test "`readlink foo`" = "foo.b"
+  safe test "`readlink foo`" = "foo.a"
   safe test -f foo/3.txt
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
