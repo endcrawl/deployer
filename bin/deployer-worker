@@ -29,7 +29,7 @@ main()
 
   # Got all necessary locks. Invoke the deployer.
 
-  deployer "$DEPLOYER_DEPLOY_ROOT" "$unit" "$revision" "$@"
+  deployer "$unit" "$revision" "$@"
   rc=$?
 
   # On successful deployment, pull the bouncer's trigger.

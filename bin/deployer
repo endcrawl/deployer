@@ -1,15 +1,14 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} <deploy_root> <unit> <revision> [<program>]"; }
+usage() { echo "usage: ${0##*/} <unit> <revision> [<program>]"; }
 
 main()
 {
-  if [ $# -lt 3 ]; then
+  if [ $# -lt 2 ]; then
     usage 1>&2
     exit 100
   fi
 
-  deploy_root="$1" ; shift
   unit="$1"        ; shift
   revision="$1"    ; shift
 
@@ -20,6 +19,13 @@ main()
     test "$a" != "${a##*.}" && barf "invalid unit or revision: $a"
     test "$a" != "${a##*/}" && barf "invalid unit or revision: $a"
   done
+
+  # Validate deploy root.
+
+  test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
+  test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
+
+  deploy_root="$DEPLOYER_DEPLOY_ROOT"
 
   # Require existing a & b directories.
 
