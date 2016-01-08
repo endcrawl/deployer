@@ -1,3 +1,9 @@
 #!/bin/sh
+
+. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+
+safe test -n "$DEPLOYER_QUEUE"
+safe cd "$DEPLOYER_QUEUE"
+
 exec fsq-run -v -Q new -D cur -A deployer-after-job . deployer-worker make
 
