@@ -28,6 +28,8 @@ main()
     }
   done
 
+  test -e "$DEPLOYER_DEPLOY_ROOT/${unit}" || safe ln -s "${unit}.a" "$DEPLOYER_DEPLOY_ROOT/${unit}"
+
   return 0
 }
 
