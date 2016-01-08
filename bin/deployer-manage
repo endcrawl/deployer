@@ -1,0 +1,37 @@
+#!/bin/sh
+
+usage() { echo "usage: ${0##*/} <unit> <git-url> [<branch>]"; }
+
+main()
+{
+  if [ $# -lt 2 ]; then
+    usage 1>&2
+    exit 100
+  fi
+
+  unit="$1" ; shift
+  git_url="$1" ; shift
+  branch="${1:-master}"
+
+  test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
+  test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
+
+  for suffix in a b; do
+    export GIT_WORK_TREE="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
+    export GIT_DIR="${GIT_WORK_TREE}/.git"
+    safe mkdir -p "$GIT_WORK_TREE"
+    test -d "$GIT_DIR" || {
+      safe git init --shared=group
+      safe git remote add origin "$git_url"
+      safe git fetch origin
+      safe git checkout -f "$branch"
+    }
+  done
+
+  return 0
+}
+
+. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+main "$@"
+exit $?
+
