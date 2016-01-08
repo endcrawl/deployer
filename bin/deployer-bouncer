@@ -1,0 +1,39 @@
+#!/bin/sh
+
+usage() { echo "usage: ${0##*/} <service-root>"; }
+
+main()
+{
+  if [ $# -lt 1 ]; then
+    usage 1>&2
+    exit 100
+  fi
+
+  service_root="$1" ; shift
+
+  test -d "$service_root"         || barf "service root missing: $service_root"
+  test -z "$DEPLOYER_BOUNCED_DIR" && barf "missing environment variable: DEPLOYER_BOUNCED_DIR"
+  test -d "$DEPLOYER_BOUNCED_DIR" || barf "deployer bounced directory missing: $DEPLOYER_BOUNCED_DIR"
+
+  safe find -L "$service_root" \
+    -mindepth 1 \
+    -maxdepth 1 \
+    -type d \
+    -a -not -name ".*" |
+  while read svcdir; do
+    svcname="${svcdir#${service_root}/}"
+    test -L "$svcdir/root" || continue
+    test -x "$svcdir/bounce" || continue
+    test -e "$svcdir/root/.deployed" || continue
+    test "$DEPLOYER_BOUNCED_DIR/$svcname" -nt "$svcdir/root/.deployed" && continue
+    # TODO do something with errors
+    ( safe cd "$svcdir" && safe ./bounce && safe touch "$DEPLOYER_BOUNCED_DIR/$svcname" )
+  done
+
+  return 0
+}
+
+. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+main "$@"
+exit $?
+
