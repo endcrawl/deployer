@@ -1,5 +1,12 @@
 #!/bin/sh
-. "$DEPLOYER_CONFIG"
+
+. deployer-shlib     || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+
+safe test -n "$DEPLOYER_CONFIG"
+safe . "$DEPLOYER_CONFIG"
+safe test "$DEPLOYER_CONCURRENCY" -ge 0
+safe test -n "$DEPLOYER_TRIGGER"
+
 exec trigger-listen -v -1 -c "$DEPLOYER_CONCURRENCY" "$DEPLOYER_TRIGGER" \
   sh -e -c '. "$0" ; cd "$DEPLOYER_QUEUE" ; exec "$@"' "$DEPLOYER_CONFIG" deployer-queue
 
