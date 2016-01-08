@@ -34,7 +34,7 @@ main()
 
   # On successful deployment, pull the bouncer's trigger.
 
-  [ "$rc" -eq 0 -a -n "$DEPLOYER_BOUNCER_TRIGGER" ] && trigger-pull "$DEPLOYER_BOUNCER_TRIGGER"
+  [ "$rc" -eq 0 -a -n "$DEPLOYER_BOUNCER_TRIGGER" ] && trigger-pull "$DEPLOYER_BOUNCER_TRIGGER" >/dev/null 2>&1
 
   # Ignore an exit code of 99 = there was nothing to deploy.
 
