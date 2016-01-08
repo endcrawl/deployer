@@ -23,12 +23,15 @@ main()
   while read svcdir; do
     svcname="${svcdir#${service_root}/}"
     test -L "$svcdir/root" || continue
-    test -x "$svcdir/bounce" || continue
     test -e "$svcdir/root/.deployed" || continue
     test "$DEPLOYER_BOUNCED_DIR/$svcname" -nt "$svcdir/root/.deployed" && continue
     (
       safe cd "$svcdir"
-      safe ./bounce
+      if [ -x bounce ]; then
+        safe ./bounce
+      else
+        safe svc -h .
+      fi
       safe touch "$DEPLOYER_BOUNCED_DIR/$svcname"
     )
     rc="$?" ; test "$rc" -eq 0 || log 0 "error bouncing $svcname: $rc"
