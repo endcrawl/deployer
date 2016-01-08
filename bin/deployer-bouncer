@@ -31,7 +31,7 @@ main()
       safe ./bounce
       safe touch "$DEPLOYER_BOUNCED_DIR/$svcname"
     )
-    rc="$?" ; "$rc" -eq 0 || shout "error bouncing $svcname: $rc"
+    rc="$?" ; test "$rc" -eq 0 || shout "error bouncing $svcname: $rc"
   done
 
   return 0
