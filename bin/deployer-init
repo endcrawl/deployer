@@ -14,7 +14,7 @@ main()
   safe mkdir -p "$DEPLOYER_QUEUE/cur"
   safe mkdir -p "$DEPLOYER_QUEUE/new"
   safe mkdir -p "$DEPLOYER_LOCK_DIR/unit"
-  safe mkdir -p "$DEPLOYER_DEPLOY_ROOT"
+  safe mkdir -p "$DEPLOYER_DEPLOY_ROOT/tmp"
 
   test -p "$DEPLOYER_TRIGGER" || {
     dir=`dirname "$DEPLOYER_TRIGGER"`
