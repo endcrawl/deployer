@@ -36,15 +36,18 @@ main()
   test -d "$path_b" || barf "missing git checkout: $path_b"
 
   # Determine the currently active checkout for this unit.
+  # Create the initial symlink if necessary.
 
   path_symlink="${deploy_root}/${unit}"
+
+  test -L "$path_symlink" || safe ln -s "${unit}.a" "$path_symlink"
 
   if [ -L "$path_symlink" ]; then
     target_old=`readlink "$path_symlink"`
   elif [ -e "$path_symlink" ]; then
     barf "non-symlink at: $path_symlink"
   else
-    target_old="${unit}.b"
+    barf "failed to find symlink at: $path_symlink"
   fi
 
   # Determine the currently inactive checkout for this unit.
