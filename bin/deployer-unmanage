@@ -1,0 +1,31 @@
+#!/bin/sh
+
+usage() { echo "usage: ${0##*/} <unit>"; }
+
+main()
+{
+  if [ $# -lt 1 ]; then
+    usage 1>&2
+    exit 100
+  fi
+
+  unit="$1" ; shift
+
+  test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
+  test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
+
+  symlink="$DEPLOYER_DEPLOY_ROOT/${unit}"
+  test -L "$symlink" && safe rm "$symlink"
+
+  for suffix in a b; do
+    dir="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
+    test -d "$dir" && rm -rf "$dir"
+  done
+
+  return 0
+}
+
+. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+main "$@"
+exit $?
+
