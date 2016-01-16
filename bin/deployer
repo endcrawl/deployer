@@ -101,14 +101,14 @@ main()
   )
   rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
 
-  # Create the new symlink under the tmp/ dir.
+  # Create the new symlink under the .tmp/ dir.
 
-  safe ln -s "$target_new" "${deploy_root}/tmp/${unit}"
+  safe ln -s "$target_new" "${deploy_root}/.tmp/${unit}"
 
   # Atomically move the new symlink into place.
 
   (
-    safe cd "${deploy_root}/tmp"
+    safe cd "${deploy_root}/.tmp"
     safe mv "$unit" ..
   )
   rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
