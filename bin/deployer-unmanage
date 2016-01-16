@@ -11,6 +11,9 @@ main()
 
   unit="$1" ; shift
 
+  test -z "$unit"                 && barf "missing unit"
+  test "$unit" != "${unit##*.}"   && barf "invalid unit: $unit"
+  test "$unit" != "${unit##*/}"   && barf "invalid unit: $unit"
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
 
@@ -21,6 +24,8 @@ main()
     dir="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
     test -d "$dir" && rm -rf "$dir"
   done
+
+  # TODO remove queue req dir too
 
   return 0
 }

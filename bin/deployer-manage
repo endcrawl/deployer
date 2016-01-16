@@ -13,8 +13,9 @@ main()
   git_url="$1" ; shift
   branch="${1:-master}"
 
-  # TODO validate unit has no disallowed path chars
-
+  test -z "$unit"                 && barf "missing unit"
+  test "$unit" != "${unit##*.}"   && barf "invalid unit: $unit"
+  test "$unit" != "${unit##*/}"   && barf "invalid unit: $unit"
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
   test -z "$DEPLOYER_QUEUE"       && barf "missing environment variable: DEPLOYER_QUEUE"
@@ -22,7 +23,7 @@ main()
 
   # Create a per-unit directory for incoming deployer job requests.
 
-  safe mkdir -p "$DEPLOYER_QUEUE/req/${unit}"
+  safe mkdir -p "${DEPLOYER_QUEUE}/req/${unit}"
 
   # Create foo.a/ and foo.b/ directories under the deploy root.
 
