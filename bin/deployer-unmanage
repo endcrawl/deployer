@@ -16,16 +16,24 @@ main()
   test "$unit" != "${unit##*/}"   && barf "invalid unit: $unit"
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
+  test -z "$DEPLOYER_QUEUE"       && barf "missing environment variable: DEPLOYER_QUEUE"
+  test -d "$DEPLOYER_QUEUE"       || barf "deploy root directory missing: $DEPLOYER_QUEUE"
+
+  # Remove the per-unit directory for incoming deployer job requests.
+
+  safe rm -rf "${DEPLOYER_QUEUE}/req/${unit}"
+
+  # Remove the active symlink.
 
   symlink="$DEPLOYER_DEPLOY_ROOT/${unit}"
   test -L "$symlink" && safe rm "$symlink"
+
+  # Remove both foo.a/ and foo.b/ directories.
 
   for suffix in a b; do
     dir="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
     test -d "$dir" && rm -rf "$dir"
   done
-
-  # TODO remove queue req dir too
 
   return 0
 }
