@@ -13,8 +13,18 @@ main()
   git_url="$1" ; shift
   branch="${1:-master}"
 
+  # TODO validate unit has no disallowed path chars
+
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
+  test -z "$DEPLOYER_QUEUE"       && barf "missing environment variable: DEPLOYER_QUEUE"
+  test -d "$DEPLOYER_QUEUE"       || barf "deploy root directory missing: $DEPLOYER_QUEUE"
+
+  # Create a per-unit directory for incoming deployer job requests.
+
+  safe mkdir -p "$DEPLOYER_QUEUE/req/${unit}"
+
+  # Create foo.a/ and foo.b/ directories under the deploy root.
 
   for suffix in a b; do
     export GIT_WORK_TREE="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
@@ -27,6 +37,8 @@ main()
       safe git checkout -f "$branch"
     }
   done
+
+  # Ensure one of the foo.a/ and foo.b/ is active (has the foo symlink pointing to it).
 
   test -e "$DEPLOYER_DEPLOY_ROOT/${unit}" || safe ln -s "${unit}.a" "$DEPLOYER_DEPLOY_ROOT/${unit}"
 

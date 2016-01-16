@@ -4,6 +4,6 @@
 
 safe test -n "$DEPLOYER_QUEUE"
 safe cd "$DEPLOYER_QUEUE"
-
+safe deployer-stage-jobs
 exec fsq-run -v -Q new -D cur -A deployer-after-job . deployer-worker make
 

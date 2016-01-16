@@ -5,11 +5,11 @@ main()
   # Parse data out of the job file name.
 
   jobname="$FSQ_JOB"
+  unit="${jobname%%.*}"      ; jobname="${jobname#*.}"
+  revision="${jobname%%.*}"  ; jobname="${jobname#*.}"
   jobdate="${jobname%%.*}"   ; jobname="${jobname#*.}"
   jobtime="${jobname%%.*}"   ; jobname="${jobname#*.}"
   jobrandom="${jobname%%.*}" ; jobname="${jobname#*.}"
-  unit="${jobname%%.*}"      ; jobname="${jobname#*.}"
-  revision="${jobname%%.*}"  ; jobname="${jobname#*.}"
 
   [ -z "$unit"     ] && barf "cannot parse unit from jobfile: $FSQ_JOB" 100
   [ -z "$revision" ] && barf "cannot parse revision from jobfile: $FSQ_JOB" 100

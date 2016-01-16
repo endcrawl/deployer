@@ -39,14 +39,14 @@ main()
 
   jobdatetime=`date +%Y%m%d.%H%M%S`
   jobrandom=`od -N 4 -t x4 -A n -v < /dev/urandom | sed -e 's/^ //'`
-  jobname="${jobdatetime}.${jobrandom}.${unit}.${revision}"
+  jobname="${revision}.${jobdatetime}.${jobrandom}"
 
   # Enqueue a new job file.
 
   safe touch "$DEPLOYER_QUEUE/tmp/$jobname"
-  safe mv    "$DEPLOYER_QUEUE/tmp/$jobname" "$DEPLOYER_QUEUE/new/$jobname"
+  safe mv    "$DEPLOYER_QUEUE/tmp/$jobname" "$DEPLOYER_QUEUE/req/$unit/$jobname"
 
-  log 2 "enqueued new deployer job: $jobname"
+  log 2 "enqueued new deployer job: ${unit}.${jobname}"
 
   [ -n "$DEPLOYER_TRIGGER" ] && trigger-pull "$DEPLOYER_TRIGGER" >/dev/null 2>&1
 
