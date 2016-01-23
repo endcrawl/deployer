@@ -38,7 +38,7 @@ main()
   return 0
 }
 
-. deployer-shlib || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
 main "$@"
 exit $?
 

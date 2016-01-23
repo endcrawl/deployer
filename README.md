@@ -10,6 +10,7 @@ Requirements:
 - `setlock` from `daemontools`
 - `trigger-listen` and `trigger-pull` from `trigger`
 - `fsq-run`
+- `shellsafe`
 
 See that tests pass:
 

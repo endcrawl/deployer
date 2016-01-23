@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Common shell functions sourced into all scripts.
-
-log()   { level="$1" ; shift ; echo "${0##*/}/$$: {L$level} $*" 1>&2; }
-shout() { log 1 "$@"; }
-barf()  { log 0 "$1"; test $# -gt 1 && exit $2 || exit 111; }
-safe()  { "$@" || barf "cannot $*" $?; }
-

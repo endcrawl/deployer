@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. deployer-shlib     || { echo "error sourcing deployer-shlib." 1>&2 ; exit 100 ; }
+. shellsafe     || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
 
 safe test -n "$DEPLOYER_CONFIG"
 safe . "$DEPLOYER_CONFIG"
