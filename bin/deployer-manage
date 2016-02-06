@@ -1,9 +1,20 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} <unit> <git-url> [<branch>]"; }
+usage() { echo "usage: ${0##*/} [-x] <unit> <git-url> [<branch>]"; }
 
 main()
 {
+  inplace=0
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+         -x) inplace=1 ; shift ;;
+         -h) usage ; exit 0 ;;
+         -*) barf "unknown option: $1" ;;
+          *) break ;;
+    esac
+  done
+
   if [ $# -lt 2 ]; then
     usage 1>&2
     exit 100
@@ -25,9 +36,17 @@ main()
 
   safe mkdir -p "${DEPLOYER_QUEUE}/req/${unit}"
 
-  # Create foo.a/ and foo.b/ directories under the deploy root.
+  # Create foo.a/ and foo.b/ directories (or just foo.x/ if in-place) under the deploy root.
 
-  for suffix in a b; do
+  if [ "$inplace" -gt 0 ]; then
+    suffixes="x"
+    target_default="${unit}.x"
+  else
+    suffixes="a b"
+    target_default="${unit}.a"
+  fi
+
+  for suffix in $suffixes; do
     export GIT_WORK_TREE="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
     export GIT_DIR="${GIT_WORK_TREE}/.git"
     safe mkdir -p "$GIT_WORK_TREE"
@@ -41,7 +60,7 @@ main()
 
   # Ensure one of the foo.a/ and foo.b/ is active (has the foo symlink pointing to it).
 
-  test -e "$DEPLOYER_DEPLOY_ROOT/${unit}" || safe ln -s "${unit}.a" "$DEPLOYER_DEPLOY_ROOT/${unit}"
+  test -e "$DEPLOYER_DEPLOY_ROOT/${unit}" || safe ln -s "$target_default" "$DEPLOYER_DEPLOY_ROOT/${unit}"
 
   return 0
 }

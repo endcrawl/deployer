@@ -27,20 +27,26 @@ main()
 
   deploy_root="$DEPLOYER_DEPLOY_ROOT"
 
-  # Require existing a & b directories.
+  # Require existing .a & .b directories, unless we're in update-in-place mode (.x).
 
   path_a="${deploy_root}/${unit}.a"
   path_b="${deploy_root}/${unit}.b"
+  path_x="${deploy_root}/${unit}.x"
 
-  test -d "$path_a" || barf "missing git checkout: $path_a"
-  test -d "$path_b" || barf "missing git checkout: $path_b"
+  if [ -d "$path_x" ]; then
+    target_default="${unit}.x"
+  else
+    target_default="${unit}.a"
+    test -d "$path_a" || barf "missing git checkout: $path_a"
+    test -d "$path_b" || barf "missing git checkout: $path_b"
+  fi
 
   # Determine the currently active checkout for this unit.
   # Create the initial symlink if necessary.
 
   path_symlink="${deploy_root}/${unit}"
 
-  test -L "$path_symlink" || safe ln -s "${unit}.a" "$path_symlink"
+  test -L "$path_symlink" || safe ln -s "$target_default" "$path_symlink"
 
   if [ -L "$path_symlink" ]; then
     target_old=`readlink "$path_symlink"`
@@ -52,7 +58,9 @@ main()
 
   # Determine the currently inactive checkout for this unit.
 
-  if [ "$target_old" = "${unit}.a" ]; then
+  if [ "$target_default" = "${unit}.x" ]; then
+    target_new="${unit}.x"
+  elif [ "$target_old" = "${unit}.a" ]; then
     target_new="${unit}.b"
   else
     target_new="${unit}.a"
