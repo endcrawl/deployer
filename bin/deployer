@@ -69,12 +69,21 @@ main()
   path_old="${deploy_root}/${target_old}"
   path_new="${deploy_root}/${target_new}"
 
-  # Determine the currently active revision.
+  # Determine the currently active branch and revision.
 
   export GIT_WORK_TREE="$path_old"
   export GIT_DIR="${path_old}/.git"
   revision_old=`safe git rev-parse HEAD`
   test -n "$revision_old" || barf "error getting current revision for: ${target_old}"
+  branch_old=`git symbolic-ref HEAD 2>/dev/null`
+  branch_old=${branch_old##refs/heads/}
+
+  # If revision is _, try to stay on same branch as active checkout.
+
+  if [ "$revision" = "_" ]; then
+    revision="$branch_old"
+    test -n "$revision" || barf "error defaulting to active branch: detached checkout?"
+  fi
 
   # Update the inactive checkout with git.
   # Exit with special status if it would be identical to the active checkout.
@@ -92,7 +101,7 @@ main()
       log 2 "applying changes to inactive checkout: ${target_new}"
       # XXX workaround: git-stash doesn't honor GIT_WORK_TREE / GIT_DIR as of 1.9.1
       ( safe cd "$GIT_WORK_TREE" && git stash )
-      safe git checkout --detach origin/"$revision"
+      safe git checkout -B "$revision" origin/"$revision"
       ;;
     *)
       barf "git-diff failed with exit code: $?"

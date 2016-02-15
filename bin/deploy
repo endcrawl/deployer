@@ -10,7 +10,7 @@ main()
   fi
 
   unit="$1" ; shift
-  revision="${1:-master}"
+  revision="${1:-_}"
 
   # Validate unit and revision against unsafe path chars.
 
