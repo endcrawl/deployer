@@ -92,7 +92,8 @@ main()
   export GIT_DIR="${path_new}/.git"
   safe git fetch
   git diff --exit-code "$revision_old" origin/"$revision" >/dev/null
-  case $? in
+  rc=$?
+  case $rc in
     0)
       log 2 "no changes for: ${target_new} ${revision}"
       exit 99
@@ -104,7 +105,7 @@ main()
       safe git checkout -B "$revision" origin/"$revision"
       ;;
     *)
-      barf "git-diff failed with exit code: $?"
+      barf "git-diff failed with exit code: $rc"
       ;;
   esac
 
