@@ -91,7 +91,7 @@ main()
   export GIT_WORK_TREE="$path_new"
   export GIT_DIR="${path_new}/.git"
   safe git fetch
-  git diff --exit-code "$revision_old" origin/"$revision" >/dev/null
+  git diff --quiet "$revision_old" origin/"$revision"
   rc=$?
   case $rc in
     0)
