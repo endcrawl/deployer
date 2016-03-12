@@ -15,7 +15,7 @@ clean :
 
 out/% : case/%
 	@ printf "[test] %-32s ... " $*
-	@ if clean-git-env $^ "$(CURDIR)"/work/$* >$@ 2>&1; then \
+	@ if env - PATH="$$PATH" $^ "$(CURDIR)"/work/$* >$@ 2>&1; then \
 	    printf "pass\n" ; \
 	    touch pass/$* ; \
 	  else \
