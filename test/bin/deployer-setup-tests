@@ -11,6 +11,10 @@ export DEPLOYER_DEPLOY_ROOT="$workdir"/deploys
 export DEPLOYER_CONCURRENCY=1
 export DEPLOYER_RETRY_DELAY=0
 
+# Clean up test environment.
+
+unset FSQ_JOB
+
 # Deployer setup.
 
 safe rm -rf "$workdir"
