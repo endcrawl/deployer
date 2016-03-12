@@ -11,7 +11,7 @@ default : tests
 tests : clean $(TEST_OUTPUTS)
 
 clean :
-	@ rm -f pass/* fail/*
+	@ rm -rf out/* work/* pass/* fail/*
 
 out/% : case/%
 	@ printf "[test] %-32s ... " $*
