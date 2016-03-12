@@ -13,7 +13,7 @@ safe . deployer-setup-tests
   safe git checkout -b branch1
   safe touch 2.txt
   safe git add 2.txt
-  safe git commit -m 1
+  safe git commit -m 2
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
@@ -36,7 +36,7 @@ rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
   safe git checkout branch1
   safe touch 3.txt
   safe git add 3.txt
-  safe git commit -m 1
+  safe git commit -m 3
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
