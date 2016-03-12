@@ -13,7 +13,7 @@ export DEPLOYER_RETRY_DELAY=0
 
 # Clean up test environment.
 
-unset FSQ_JOB
+FSQ_JOB=
 
 # Deployer setup.
 
