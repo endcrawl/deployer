@@ -8,9 +8,9 @@ TEST_OUTPUTS = ${TEST_CASES:case/%=out/%}
 
 default : tests
 
-tests : reset-tests $(TEST_OUTPUTS)
+tests : clean $(TEST_OUTPUTS)
 
-reset-tests :
+clean :
 	@ rm -f pass/* fail/*
 
 out/% : case/%
