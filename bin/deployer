@@ -86,28 +86,37 @@ main()
   fi
 
   # Update the inactive checkout with git.
-  # Exit with special status if it would be identical to the active checkout.
 
   export GIT_WORK_TREE="$path_new"
   export GIT_DIR="${path_new}/.git"
   safe git fetch
-  git diff --quiet "$revision_old" origin/"$revision"
-  rc=$?
-  case $rc in
-    0)
-      log 2 "no changes for: ${target_new} ${revision}"
-      exit 99
-      ;;
-    1)
-      log 2 "applying changes to inactive checkout: ${target_new}"
-      # XXX workaround: git-stash doesn't honor GIT_WORK_TREE / GIT_DIR as of 1.9.1
-      ( safe cd "$GIT_WORK_TREE" && git stash )
-      safe git checkout -B "$revision" origin/"$revision"
-      ;;
-    *)
-      barf "git-diff failed with exit code: $rc"
-      ;;
-  esac
+
+  # See if the inactive checkout would differ from the active one.
+
+  differs=0
+  if [ "x"`git cat-file -t "$revision_old" 2>/dev/null` != "xcommit" ]; then
+    # This commit might not even exist anymore (eg was deleted in force push).
+    differs=1
+  else
+    git diff --quiet "$revision_old" origin/"$revision"
+    rc=$?
+    case $rc in
+      0|1) differs="$rc" ;;
+      *) barf "git-diff failed with exit code: $rc" ;;
+    esac
+  fi
+
+  # Exit with special status if it would be identical to the active checkout.
+
+  if [ "$differs" -eq 0 ]; then
+    log 2 "no changes for: ${target_new} ${revision}"
+    exit 99
+  fi
+
+  # XXX workaround: git-stash doesn't honor GIT_WORK_TREE / GIT_DIR as of 1.9.1
+  log 2 "applying changes to inactive checkout: ${target_new}"
+  ( safe cd "$GIT_WORK_TREE" && git stash )
+  safe git checkout -B "$revision" origin/"$revision"
 
   # Run the tail program (typically just `make`) to do post-update tasks.
   # Touch a file to indicate that a new deployment happened.
