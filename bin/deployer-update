@@ -27,8 +27,8 @@ main()
 
   # Determine the active and inactive checkouts for this unit.
 
-  target_old=`deployer-look -a "$unit"` # TODO safe
-  target_new=`deployer-look -i "$unit"` # TODO safe
+  target_old=`deployer-look -a "$unit"` || exit $?
+  target_new=`deployer-look -i "$unit"` || exit $?
   path_old="${DEPLOYER_DEPLOY_ROOT}/${target_old}"
   path_new="${DEPLOYER_DEPLOY_ROOT}/${target_new}"
 
