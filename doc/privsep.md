@@ -7,7 +7,7 @@ For one thing, this allows the `deploy` program to `test -d` for whether a unit 
 
 ### Privilege Separation
 
-When `deployer-queue` is running as root, the `$DEPLOYER_DATA_DIR/units/foo/env/DEPLOYER_USER` file determines which user account we drop privileges to before conducting any deployment operations. It's a fatal error if this file is missing and we're running as root.
+When `deployer-queue` is running as root, the `$DEPLOYER_DATA_DIR/units/foo/DEPLOYER_USER` file determines which user account we drop privileges to before conducting any deployment operations. It's a fatal error if this file is missing and we're running as root.
 
 Since deployment operations can now happen under one of many user accounts, and, in most setups, the `git fetch` operation needs access to a shared ssh key, this presents a problem: ssh refuses to use an `~/.ssh/id_rsa` file that's group readable.
 
@@ -68,9 +68,10 @@ When `deployer-queue` isn't running as root, none of the above happens:
 
 ### Interface-Level Changes
 
-- [ ] New option: `deployer-manage -u username`
+- [x] New option: `deployer-manage -u username`
   - Stores `DEPLOYER_USER` setting. Optional, but privileged mode deployments will fail without it.
-- [ ] New option: `deployer-manage -k path/to/ssh/private/key`
-  - Stores `DEPLOYER_SSH_KEY` setting. Optional, but git+ssh deployments may fail without it. Pubkey is assumed to be same path with `.pub` appended.
-- [ ] Should `deployer-manage -x` store the `DEPLOYER_IN_PLACE` option somewhere?
+- [x] New option: `deployer-manage -k path/to/ssh/private/key`
+  - Stores `DEPLOYER_SSH_KEY` setting. Optional, but git+ssh deployments may fail without it. Pubkey is assumed by ssh-agent to be same path with `.pub` appended.
+- [x] Should `deployer-manage -x` store the `DEPLOYER_IN_PLACE` option somewhere?
+  - Not necessary. There are some settings which are already manifest in the checkouts themselves. No sense in storing them twice.
 
