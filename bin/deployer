@@ -30,6 +30,10 @@ main()
 
   test ! -d "${DEPLOYER_DATA_DIR}/${unit}" && barf "unit is unmanaged: ${unit}"
 
+  # Self-exec to put per-unit settings in environment, unless we've already done that.
+
+  test "$unit" = "$DEPLOYER_UNIT" || safe envdir "${DEPLOYER_DATA_DIR}/${unit}" "$0" "$unit" "$revision" "$@"
+
   # Require existing .a & .b directories, unless we're in update-in-place mode (.x).
 
   deploy_root="$DEPLOYER_DEPLOY_ROOT"
