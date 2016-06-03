@@ -31,7 +31,6 @@ main()
   test ! -d "${DEPLOYER_DATA_DIR}/${unit}" && barf "unit is unmanaged: ${unit}"
 
   # Self-exec to put per-unit settings in environment, unless we've already done that.
-  # FIXME don't let 99 under self-exec be loud failure
 
   test "$unit" = "$DEPLOYER_UNIT" || safe exec envdir "${DEPLOYER_DATA_DIR}/${unit}" "$0" "$unit" "$revision" "$@"
 
@@ -42,7 +41,6 @@ main()
   fi
 
   # Load any per-unit ssh-key and make it accessible.
-  # FIXME don't let 99 under self-exec be loud failure
 
   if [ -n "$DEPLOYER_SSH_KEY" ]; then
     test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$unit" "$revision" "$@"
