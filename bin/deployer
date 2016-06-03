@@ -20,15 +20,19 @@ main()
     test "$a" != "${a##*/}" && barf "invalid unit or revision: $a"
   done
 
-  # Validate deploy root.
+  # Validate config we use.
 
+  test -z "$DEPLOYER_DATA_DIR"    && barf "missing environment variable: DEPLOYER_DATA_DIR"
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
 
-  deploy_root="$DEPLOYER_DEPLOY_ROOT"
+  # Verify that the unit is actually a managed deployment.
+
+  test ! -d "${DEPLOYER_DATA_DIR}/${unit}" && barf "unit is unmanaged: ${unit}"
 
   # Require existing .a & .b directories, unless we're in update-in-place mode (.x).
 
+  deploy_root="$DEPLOYER_DEPLOY_ROOT"
   path_a="${deploy_root}/${unit}.a"
   path_b="${deploy_root}/${unit}.b"
   path_x="${deploy_root}/${unit}.x"
