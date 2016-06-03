@@ -3,6 +3,7 @@
 main()
 {
   test -z "$DEPLOYER_QUEUE"          && barf "missing environment variable: DEPLOYER_QUEUE"
+  test -z "$DEPLOYER_DATA_DIR"       && barf "missing environment variable: DEPLOYER_DATA_DIR"
   test -z "$DEPLOYER_TRIGGER"        && barf "missing environment variable: DEPLOYER_TRIGGER"
   test -z "$DEPLOYER_LOCK_DIR"       && barf "missing environment variable: DEPLOYER_LOCK_DIR"
   test -z "$DEPLOYER_BOUNCED_DIR"    && barf "missing environment variable: DEPLOYER_BOUNCED_DIR"
@@ -15,6 +16,7 @@ main()
   safe mkdir -p "$DEPLOYER_QUEUE/cur"
   safe mkdir -p "$DEPLOYER_QUEUE/new"
   safe mkdir -p "$DEPLOYER_QUEUE/fail"
+  safe mkdir -p "$DEPLOYER_DATA_DIR"
   safe mkdir -p "$DEPLOYER_LOCK_DIR/unit"
   safe mkdir -p "$DEPLOYER_BOUNCED_DIR"
   safe mkdir -p "$DEPLOYER_DEPLOY_ROOT/.tmp"
