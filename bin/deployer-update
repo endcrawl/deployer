@@ -25,42 +25,12 @@ main()
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
 
-  # Require existing .a & .b directories, unless we're in update-in-place mode (.x).
+  # Determine the active and inactive checkouts for this unit.
 
-  deploy_root="$DEPLOYER_DEPLOY_ROOT"
-  path_a="${deploy_root}/${unit}.a"
-  path_b="${deploy_root}/${unit}.b"
-  path_x="${deploy_root}/${unit}.x"
-
-  if [ ! -d "$path_x" ]; then
-    test -d "$path_a" || barf "missing git checkout: $path_a"
-    test -d "$path_b" || barf "missing git checkout: $path_b"
-  fi
-
-  # Determine the currently active checkout for this unit.
-
-  path_symlink="${deploy_root}/${unit}"
-
-  if [ -L "$path_symlink" ]; then
-    target_old=`readlink "$path_symlink"`
-  elif [ -e "$path_symlink" ]; then
-    barf "non-symlink at: $path_symlink"
-  else
-    barf "failed to find symlink at: $path_symlink"
-  fi
-
-  # Determine the currently inactive checkout for this unit.
-
-  if [ "$target_old" = "${unit}.x" ]; then
-    target_new="${unit}.x"
-  elif [ "$target_old" = "${unit}.a" ]; then
-    target_new="${unit}.b"
-  else
-    target_new="${unit}.a"
-  fi
-
-  path_old="${deploy_root}/${target_old}"
-  path_new="${deploy_root}/${target_new}"
+  target_old=`deployer-look -a "$unit"` # TODO safe
+  target_new=`deployer-look -i "$unit"` # TODO safe
+  path_old="${DEPLOYER_DEPLOY_ROOT}/${target_old}"
+  path_new="${DEPLOYER_DEPLOY_ROOT}/${target_new}"
 
   # Determine the currently active branch and revision.
 
