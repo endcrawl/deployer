@@ -35,14 +35,13 @@ main()
 
   test "$unit" = "$DEPLOYER_UNIT" || safe exec envdir "${DEPLOYER_DATA_DIR}/${unit}" "$0" "$unit" "$revision" "$@"
 
-  # In privileged mode, these per-unit settings are required.
+  # In privileged mode, some per-unit settings are required.
 
   if [ `id -u` -eq 0 ]; then
     test -z "$DEPLOYER_USER"  && barf "missing required per-unit setting in privileged mode: DEPLOYER_USER"
-    test -z "$DEPLOYER_GROUP" && barf "missing required per-unit setting in privileged mode: DEPLOYER_GROUP"
   fi
 
-  # Load any per-unit ssh-key and make it available.
+  # Load any per-unit ssh-key and make it accessible.
   # FIXME don't let 99 under self-exec be loud failure
 
   if [ -n "$DEPLOYER_SSH_KEY" ]; then
@@ -50,7 +49,7 @@ main()
     safe ssh-add "$DEPLOYER_SSH_KEY"
     if [ `id -u` -eq 0 ]; then
       safe chmod g+w "$SSH_AUTH_SOCK"
-      safe chgrp "$DEPLOYER_GROUP" "$SSH_AUTH_SOCK"
+      safe envuidgid "$DEPLOYER_USER" sh -c 'exec chgrp "$GID" "$1"' -- "$SSH_AUTH_SOCK"
     fi
   fi
 
