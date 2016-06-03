@@ -54,13 +54,14 @@ main()
   # Run the "bottom half" of this operation. Drop privileges in privileged mode.
 
   if [ `id -u` -eq 0 ]; then
-    target_new=`setuidgid -s "$DEPLOYER_USER" deployer-update "$unit" "$revision" "$@"`
-    rc=$?
+    setuidgid -s "$DEPLOYER_USER" deployer-update "$unit" "$revision" "$@" || exit $?
   else
-    target_new=`deployer-update "$unit" "$revision" "$@"`
-    rc=$?
+    deployer-update "$unit" "$revision" "$@" || exit $?
   fi
-  test $rc -eq 0 || exit $rc
+
+  # Success. Determine the inactive checkout in preparation for a symlink update.
+
+  target_new=`deployer-look -i "$unit"`  # TODO safe
 
   # Create the new symlink under the .tmp/ dir.
 

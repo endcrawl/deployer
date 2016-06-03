@@ -82,8 +82,8 @@ main()
 
   # XXX workaround: git-stash doesn't honor GIT_WORK_TREE / GIT_DIR as of 1.9.1
   log 2 "applying changes to inactive checkout: ${target_new}"
-  ( safe cd "$GIT_WORK_TREE" && git stash >/dev/null )  # TODO don't redirect stdout
-  safe git checkout -B "$revision" origin/"$revision" >/dev/null   # TODO don't redirect stdout
+  ( safe cd "$GIT_WORK_TREE" && git stash )
+  safe git checkout -B "$revision" origin/"$revision"
 
   # Run the tail program (typically just `make`) to do post-update tasks.
   # Touch a file to indicate that a new deployment happened.
@@ -95,10 +95,6 @@ main()
   )
   rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
 
-  # Output what should be the new active checkout.
-  # TODO don't use output of this program, use a separate program.
-
-  safe printf "%s" "$target_new"
   return 0
 }
 
