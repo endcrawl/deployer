@@ -13,7 +13,7 @@ Since deployment operations can now happen under one of many user accounts, and,
 
 So, we use `ssh-agent`. The `DEPLOYER_SSH_KEY` setting tells us where to find the shared ssh keypair, which should be `root:root`. Before switching to `DEPLOYER_USER`, we run `ssh-agent`, we add the keypair, and we make `SSH_AUTH_SOCK` group-accessible to `DEPLOYER_USER`.
 
-Then we drop privileges to `DEPLOYER_USER`, taking care to preserve `SSH_AUTH_SOCK` in the environment.
+Then we drop privileges to `DEPLOYER_USER`, taking care to preserve `SSH_AUTH_SOCK` in the environment. Once dropped, we may need to set up a particular environment with things like `PATH`, `PYTHONPATH` etc in it. It would be nice if this was done in a standard way (eg `/etc/environment` plus some user-specific dot-file).
 
 The `ssh-agent` approach has the nice property that `DEPLOYER_USER` accounts don't need access to the ssh keypair directly, and permission to use the keypair is only granted temporarily. Normally these accounts won't have any ssh access.
 
@@ -46,11 +46,31 @@ To avoid other kinds of cross-unit compromises, the `DEPLOYER_DEPLOY_ROOT` direc
     - Hooks: refuse to proceed if any hook scripts are executable?
     - Config: check `git config --list` against some kind of whitelist? Tricky.
   - Could just say meh, this isn't an issue. So `DEPLOYER_USER` could use the ssh key to get read-only access to the other repositories it already has access to...so what? The root problem is maybe the ssh key grants access to too many things. You could always use a separate ssh deploy key per repository.
+    - [x] Should we encourage a separate ssh key per repository by making the `-k` option to `deployer-manage` required, although it could perhaps be empty?
+      - Nah. Some people won't care about this feature, which complicates setups operationally.
+      - I want to switch us to per-repository deploy keys in github though. That lets us eliminate the deploy bot github user.
 
 - Would be nice if `ssh-agent` could make an identity single-use.
+  - It can't though.
 
 
 ### Unprivileged Mode
 
-When `deployer-queue` isn't running as root, none of the above happens: the `DEPLOYER_USER` setting is ignored, etc.
+When `deployer-queue` isn't running as root, none of the above happens:
+
+- The `DEPLOYER_USER` setting is ignored.
+- We don't attempt to self-exec with dropped privileges.
+- We don't attempt to self-exec under ssh-agent.
+- We don't attempt to load `DEPLOYER_SSH_KEY` into ssh-agent.
+- We don't attempt to chmod the ssh-agent socket.
+- We don't attempt to unload `DEPLOYER_SSH_KEY` after the actual update step.
+
+
+### Interface-Level Changes
+
+- [ ] New option: `deployer-manage -u username`
+  - Stores `DEPLOYER_USER` setting. Optional, but privileged mode deployments will fail without it.
+- [ ] New option: `deployer-manage -k path/to/ssh/private/key`
+  - Stores `DEPLOYER_SSH_KEY` setting. Optional, but git+ssh deployments may fail without it. Pubkey is assumed to be same path with `.pub` appended.
+- [ ] Should `deployer-manage -x` store the `DEPLOYER_IN_PLACE` option somewhere?
 
