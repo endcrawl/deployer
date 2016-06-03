@@ -55,14 +55,11 @@ main()
 
   # Run the "bottom half" of this operation. Drop privileges in privileged mode.
 
-  export DEPLOYER_UNIT
-  export DEPLOYER_REVISION="$revision"
-
   if [ `id -u` -eq 0 ]; then
-    target_new=`setuidgid -s "$DEPLOYER_USER" deployer-update "$@"`
+    target_new=`setuidgid -s "$DEPLOYER_USER" deployer-update "$unit" "$revision" "$@"`
     rc=$?
   else
-    target_new=`deployer-update "$@"`
+    target_new=`deployer-update "$unit" "$revision" "$@"`
     rc=$?
   fi
   test $rc -eq 0 || exit $rc

@@ -1,22 +1,33 @@
 #!/bin/sh
 
+usage() { echo "usage: ${0##*/} <unit> <revision> [<program>]"; }
+
 main()
 {
+  if [ $# -lt 2 ]; then
+    usage 1>&2
+    exit 100
+  fi
+
+  unit="$1"        ; shift
+  revision="$1"    ; shift
+
+  # Validate unit and revision against unsafe path chars.
+
+  for a in "$unit" "$revision"; do
+    test -z "$a"            && barf "missing unit or revision"
+    test "$a" != "${a##*.}" && barf "invalid unit or revision: $a"
+    test "$a" != "${a##*/}" && barf "invalid unit or revision: $a"
+  done
+
   # Validate config we use.
 
-  test -z "$DEPLOYER_UNIT"        && barf "missing environment variable: DEPLOYER_UNIT"
-  test -z "$DEPLOYER_REVISION"    && barf "missing environment variable: DEPLOYER_REVISION"
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
 
-  # TODO accept unit and revision as positional arguments.
-
-  unit="$DEPLOYER_UNIT"
-  revision="$DEPLOYER_REVISION"
-  deploy_root="$DEPLOYER_DEPLOY_ROOT"
-
   # Require existing .a & .b directories, unless we're in update-in-place mode (.x).
 
+  deploy_root="$DEPLOYER_DEPLOY_ROOT"
   path_a="${deploy_root}/${unit}.a"
   path_b="${deploy_root}/${unit}.b"
   path_x="${deploy_root}/${unit}.x"
