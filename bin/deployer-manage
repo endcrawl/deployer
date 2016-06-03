@@ -60,6 +60,8 @@ main()
     target_default="${unit}.a"
   fi
 
+  # TODO handle privsep mode.
+
   for suffix in $suffixes; do
     export GIT_WORK_TREE="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
     export GIT_DIR="${GIT_WORK_TREE}/.git"
