@@ -42,8 +42,8 @@ main()
 
   # Store per-unit settings.
 
-  test -z "$DEPLOYER_SSH_KEY" || printf "%s" "$DEPLOYER_SSH_KEY" > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_SSH_KEY"
-  test -z "$DEPLOYER_USER"    || printf "%s" "$DEPLOYER_USER"    > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_USER"
+  test -z "$DEPLOYER_SSH_KEY" || safe printf "%s" "$DEPLOYER_SSH_KEY" > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_SSH_KEY"
+  test -z "$DEPLOYER_USER"    || safe printf "%s" "$DEPLOYER_USER"    > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_USER"
 
   # Create a per-unit directory for incoming deployer job requests.
 
