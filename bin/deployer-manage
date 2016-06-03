@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} [-x] <unit> <git-url> [<branch>]"; }
+usage() { echo "usage: ${0##*/} [-x] [-k path/to/ssh/key] [-u user] <unit> <git-url> [<branch>]"; }
 
 main()
 {
@@ -9,6 +9,8 @@ main()
   while [ $# -gt 0 ]; do
     case "$1" in
          -x) inplace=1 ; shift ;;
+         -k) DEPLOYER_SSH_KEY="$2" ; shift ; shift ;;
+         -u) DEPLOYER_USER="$2"    ; shift ; shift ;;
          -h) usage ; exit 0 ;;
          -*) barf "unknown option: $1" ;;
           *) break ;;
@@ -31,6 +33,17 @@ main()
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
   test -z "$DEPLOYER_QUEUE"       && barf "missing environment variable: DEPLOYER_QUEUE"
   test -d "$DEPLOYER_QUEUE"       || barf "deploy root directory missing: $DEPLOYER_QUEUE"
+  test -z "$DEPLOYER_DATA_DIR"    && barf "missing environment variable: DEPLOYER_DATA_DIR"
+  test -d "$DEPLOYER_DATA_DIR"    || barf "deploy data directory missing: $DEPLOYER_DATA_DIR"
+
+  # Create a per-unit directory for settings.
+
+  safe mkdir -p "${DEPLOYER_DATA_DIR}/${unit}/env"
+
+  # Store per-unit settings.
+
+  test -z "$DEPLOYER_SSH_KEY" || printf "%s" "$DEPLOYER_SSH_KEY" > "${DEPLOYER_DATA_DIR}/${unit}/env/DEPLOYER_SSH_KEY"
+  test -z "$DEPLOYER_USER"    || printf "%s" "$DEPLOYER_USER"    > "${DEPLOYER_DATA_DIR}/${unit}/env/DEPLOYER_USER"
 
   # Create a per-unit directory for incoming deployer job requests.
 
