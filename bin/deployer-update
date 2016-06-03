@@ -1,0 +1,130 @@
+#!/bin/sh
+
+main()
+{
+  # Validate config we use.
+
+  test -z "$DEPLOYER_UNIT"        && barf "missing environment variable: DEPLOYER_UNIT"
+  test -z "$DEPLOYER_REVISION"    && barf "missing environment variable: DEPLOYER_REVISION"
+  test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
+  test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
+
+  unit="$DEPLOYER_UNIT"
+  revision="$DEPLOYER_REVISION"
+  deploy_root="$DEPLOYER_DEPLOY_ROOT"
+
+  # Require existing .a & .b directories, unless we're in update-in-place mode (.x).
+
+  path_a="${deploy_root}/${unit}.a"
+  path_b="${deploy_root}/${unit}.b"
+  path_x="${deploy_root}/${unit}.x"
+
+  if [ -d "$path_x" ]; then
+    target_default="${unit}.x"
+  else
+    target_default="${unit}.a"
+    test -d "$path_a" || barf "missing git checkout: $path_a"
+    test -d "$path_b" || barf "missing git checkout: $path_b"
+  fi
+
+  # Determine the currently active checkout for this unit.
+  # Create the initial symlink if necessary.
+
+  path_symlink="${deploy_root}/${unit}"
+
+  # test -L "$path_symlink" || safe ln -s "$target_default" "$path_symlink"
+
+  if [ -L "$path_symlink" ]; then
+    target_old=`readlink "$path_symlink"`
+  elif [ -e "$path_symlink" ]; then
+    barf "non-symlink at: $path_symlink"
+  else
+    barf "failed to find symlink at: $path_symlink"
+  fi
+
+  # Determine the currently inactive checkout for this unit.
+
+  if [ "$target_default" = "${unit}.x" ]; then
+    target_new="${unit}.x"
+  elif [ "$target_old" = "${unit}.a" ]; then
+    target_new="${unit}.b"
+  else
+    target_new="${unit}.a"
+  fi
+
+  path_old="${deploy_root}/${target_old}"
+  path_new="${deploy_root}/${target_new}"
+
+  # Determine the currently active branch and revision.
+
+  export GIT_WORK_TREE="$path_old"
+  export GIT_DIR="${path_old}/.git"
+  revision_old=`safe git rev-parse HEAD`
+  test -n "$revision_old" || barf "error getting current revision for: ${target_old}"
+  branch_old=`git symbolic-ref HEAD 2>/dev/null`
+  branch_old=${branch_old##refs/heads/}
+
+  # If revision is _, try to stay on same branch as active checkout.
+
+  if [ "$revision" = "_" ]; then
+    revision="$branch_old"
+    test -n "$revision" || barf "error defaulting to active branch: detached checkout?"
+  fi
+
+  # Update the inactive checkout with git.
+
+  export GIT_WORK_TREE="$path_new"
+  export GIT_DIR="${path_new}/.git"
+  safe git fetch
+
+  # Unload any per-unit ssh-key, so it's unavailable to the post-update command.
+
+  test -z "$DEPLOYER_SSH_KEY" || safe ssh-add -D
+
+  # See if the inactive checkout would differ from the active one.
+
+  differs=0
+  if [ "x"`git cat-file -t "$revision_old" 2>/dev/null` != "xcommit" ]; then
+    # This commit might not even exist anymore (eg was deleted in force push).
+    differs=1
+  else
+    git diff --quiet "$revision_old" origin/"$revision"
+    rc=$?
+    case $rc in
+      0|1) differs="$rc" ;;
+      *) barf "git-diff failed with exit code: $rc" ;;
+    esac
+  fi
+
+  # Exit with special status if it would be identical to the active checkout.
+
+  if [ "$differs" -eq 0 ]; then
+    log 2 "no changes for: ${target_new} ${revision}"
+    return 99
+  fi
+
+  # XXX workaround: git-stash doesn't honor GIT_WORK_TREE / GIT_DIR as of 1.9.1
+  log 2 "applying changes to inactive checkout: ${target_new}"
+  ( safe cd "$GIT_WORK_TREE" && git stash >/dev/null )  # TODO don't redirect stdout
+  safe git checkout -B "$revision" origin/"$revision" >/dev/null   # TODO don't redirect stdout
+
+  # Run the tail program (typically just `make`) to do post-update tasks.
+  # Touch a file to indicate that a new deployment happened.
+
+  (
+    safe cd "$path_new"
+    test $# -eq 0 || safe "$@" 1>&2
+    safe touch .deployed
+  )
+  rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
+
+  # Output what should be the new active checkout.
+
+  safe printf "%s" "$target_new"
+  return 0
+}
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+main "$@"
+exit $?
+
