@@ -46,7 +46,7 @@ main()
     test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$unit" "$revision" "$@"
     safe ssh-add "$DEPLOYER_SSH_KEY"
     if [ `id -u` -eq 0 ]; then
-      safe chmod g+w "$SSH_AUTH_SOCK"
+      safe chmod g+rwx "$SSH_AUTH_SOCK"
       safe envuidgid "$DEPLOYER_USER" sh -c 'exec chgrp "$GID" "$1"' -- "$SSH_AUTH_SOCK"
     fi
   fi
