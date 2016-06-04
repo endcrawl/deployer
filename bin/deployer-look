@@ -1,15 +1,17 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} [-a|-i] <unit>"; }
+usage() { echo "usage: ${0##*/} [-b] [-a|-i] <unit>"; }
 
 main()
 {
   what='active'
+  backend=0
 
   while [ $# -gt 0 ]; do
     case "$1" in
          -a) what='active'   ; shift ;;
          -i) what='inactive' ; shift ;;
+         -b) backend=1       ; shift ;;
          -h) usage ; exit 0 ;;
          -*) barf "unknown option: $1" ;;
           *) break ;;
@@ -23,12 +25,18 @@ main()
 
   unit="$1" ; shift
 
-  # Validate unit and config we use.
-  # TODO in interactive mode, pull in client config automatically.
+  # Validate unit.
 
   test -z "$unit"                 && barf "missing unit"
   test "$unit" != "${unit##*.}"   && barf "invalid unit: $unit"
   test "$unit" != "${unit##*/}"   && barf "invalid unit: $unit"
+
+  # Automatically configure unless we're in backend mode.
+
+  test "$backend" -eq 1 || safe . deployer-autoconfigure
+
+  # Validate the config we use.
+
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
 

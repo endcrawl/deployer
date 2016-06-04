@@ -61,7 +61,7 @@ main()
 
   # Success. Determine the inactive checkout in preparation for a symlink update.
 
-  target_new=`deployer-look -i "$unit"` || exit $?
+  target_new=`deployer-look -b -i "$unit"` || exit $?
 
   # Create the new symlink under the .tmp/ dir.
 
