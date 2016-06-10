@@ -41,7 +41,7 @@ main()
     test -z "$DEPLOYER_GROUP" && barf "missing required per-unit setting in privileged mode: DEPLOYER_GROUP"
   fi
 
-  # Load any per-unit ssh-key and make it accessible.
+  # Load any per-unit ssh key and make it accessible.
 
   if [ -n "$DEPLOYER_SSH_KEY" ]; then
     test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$unit" "$revision" "$@"
