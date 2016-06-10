@@ -36,6 +36,14 @@ main()
   test -d "$DEPLOYER_QUEUE"       || barf "deploy root directory missing: $DEPLOYER_QUEUE"
   test -z "$DEPLOYER_DATA_DIR"    && barf "missing environment variable: DEPLOYER_DATA_DIR"
   test -d "$DEPLOYER_DATA_DIR"    || barf "deploy data directory missing: $DEPLOYER_DATA_DIR"
+  test -z "$DEPLOYER_USER"        || DEPLOYER_GROUP=${DEPLOYER_GROUP:-`id -ng "$DEPLOYER_USER"`} || barf "gid error for $DEPLOYER_USER"
+
+  # In privileged mode, some per-unit settings are required.
+
+  if [ `id -u` -eq 0 ]; then
+    test -z "$DEPLOYER_USER"  && barf "missing required per-unit setting in privileged mode: DEPLOYER_USER"
+    test -z "$DEPLOYER_GROUP" && barf "missing required per-unit setting in privileged mode: DEPLOYER_GROUP"
+  fi
 
   # Create a per-unit directory for settings.
 
@@ -45,7 +53,6 @@ main()
 
   test -z "$DEPLOYER_SSH_KEY" || safe printf "%s" "$DEPLOYER_SSH_KEY" > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_SSH_KEY"
   test -z "$DEPLOYER_USER"    || safe printf "%s" "$DEPLOYER_USER"    > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_USER"
-  test -z "$DEPLOYER_USER"    || DEPLOYER_GROUP=${DEPLOYER_GROUP:-`id -ng "$DEPLOYER_USER"`} || barf "gid error for $DEPLOYER_USER"
   test -z "$DEPLOYER_GROUP"   || safe printf "%s" "$DEPLOYER_GROUP"   > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_GROUP"
                                  safe printf "%s" "$unit"             > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_UNIT"
 
