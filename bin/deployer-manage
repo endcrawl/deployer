@@ -44,6 +44,8 @@ main()
 
   test -z "$DEPLOYER_SSH_KEY" || safe printf "%s" "$DEPLOYER_SSH_KEY" > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_SSH_KEY"
   test -z "$DEPLOYER_USER"    || safe printf "%s" "$DEPLOYER_USER"    > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_USER"
+  test -z "$DEPLOYER_USER"    || DEPLOYER_GROUP=${DEPLOYER_GROUP:-`id -ng "$DEPLOYER_USER"`} || barf "gid error for $DEPLOYER_USER"
+  test -z "$DEPLOYER_GROUP"   || safe printf "%s" "$DEPLOYER_GROUP"   > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_GROUP"
                                  safe printf "%s" "$unit"             > "${DEPLOYER_DATA_DIR}/${unit}/DEPLOYER_UNIT"
 
   # Create a per-unit directory for incoming deployer job requests.
