@@ -17,6 +17,10 @@ main()
           *) break ;;
     esac
   done
+  export DEPLOYER_INPLACE
+  export DEPLOYER_SSH_KEY
+  export DEPLOYER_USER
+  export DEPLOYER_GROUP
 
   if [ $# -lt 2 ]; then
     usage 1>&2
@@ -43,6 +47,17 @@ main()
   if [ `id -u` -eq 0 ]; then
     test -z "$DEPLOYER_USER"  && barf "missing required per-unit setting in privileged mode: DEPLOYER_USER"
     test -z "$DEPLOYER_GROUP" && barf "missing required per-unit setting in privileged mode: DEPLOYER_GROUP"
+  fi
+
+  # Load any ssh key and make it accessible.
+
+  if [ -n "$DEPLOYER_SSH_KEY" ]; then
+    test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$unit" "$git_url" "$branch"
+    safe ssh-add "$DEPLOYER_SSH_KEY"
+    if [ `id -u` -eq 0 ]; then
+      safe chmod g+rwx "$SSH_AUTH_SOCK"
+      safe chgrp "$DEPLOYER_GROUP" "$SSH_AUTH_SOCK"
+    fi
   fi
 
   # Create a per-unit directory for settings.
