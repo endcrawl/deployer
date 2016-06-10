@@ -4,11 +4,11 @@ usage() { echo "usage: ${0##*/} [-x] [-k path/to/ssh/key] [-u user] [-g group] <
 
 main()
 {
-  inplace=0
+  DEPLOYER_INPLACE=${DEPLOYER_INPLACE:-0}
 
   while [ $# -gt 0 ]; do
     case "$1" in
-         -x) inplace=1 ; shift ;;
+         -x) DEPLOYER_INPLACE=1    ; shift ;;
          -k) DEPLOYER_SSH_KEY="$2" ; shift ; shift ;;
          -u) DEPLOYER_USER="$2"    ; shift ; shift ;;
          -g) DEPLOYER_GROUP="$2"   ; shift ; shift ;;
@@ -62,7 +62,7 @@ main()
 
   # Create foo.a/ and foo.b/ directories (or just foo.x/ if in-place) under the deploy root.
 
-  if [ "$inplace" -gt 0 ]; then
+  if [ "$DEPLOYER_INPLACE" -gt 0 ]; then
     suffixes="x"
     target_default="${unit}.x"
   else
