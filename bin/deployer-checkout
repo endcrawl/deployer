@@ -1,0 +1,38 @@
+#!/bin/sh
+
+usage() { echo "usage: ${0##*/} <git-url> <branch>"; }
+
+main()
+{
+  if [ $# -lt 2 ]; then
+    usage 1>&2
+    exit 100
+  fi
+
+  git_url="$1" ; shift
+  branch="$1"  ; shift
+
+  # Validate config we use.
+
+  test -z "$GIT_WORK_TREE"  && barf "missing environment variable: GIT_WORK_TREE"
+  test -d "$GIT_WORK_TREE"  || barf "deploy root directory missing: GIT_WORK_TREE"
+  test -z "$GIT_DIR"        && barf "missing environment variable: GIT_DIR"
+
+  # If .git/ already exists, assume there's nothing to do.
+
+  test ! -d "$GIT_DIR" || return 0
+
+  # Do the initial checkout (uses GIT_WORK_TREE and GIT_DIR).
+
+  safe git init --shared=group
+  safe git remote add origin "$git_url"
+  safe git fetch origin
+  safe git checkout -f "$branch"
+
+  return 0
+}
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+main "$@"
+exit $?
+
