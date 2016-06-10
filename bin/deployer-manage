@@ -74,7 +74,7 @@ main()
     }
   done
 
-  # Ensure one of the foo.a/ and foo.b/ is active (has the foo symlink pointing to it).
+  # Ensure one of foo.a/ and foo.b/ is active (has the foo symlink pointing to it).
 
   test -e "$DEPLOYER_DEPLOY_ROOT/${unit}" || safe ln -s "$target_default" "$DEPLOYER_DEPLOY_ROOT/${unit}"
 
