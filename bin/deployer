@@ -55,7 +55,7 @@ main()
   # Run the "bottom half" of this operation. Drop privileges in privileged mode.
 
   if [ `id -u` -eq 0 ]; then
-    setuidgid -s "$DEPLOYER_USER" deployer-update "$unit" "$revision" "$@" || exit $?
+    setuidgid -s "$DEPLOYER_USER" env HOME=/nonexistent deployer-update "$unit" "$revision" "$@" || exit $?
   else
     deployer-update "$unit" "$revision" "$@" || exit $?
   fi

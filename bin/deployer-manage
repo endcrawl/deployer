@@ -91,7 +91,7 @@ main()
     safe mkdir -p "$GIT_WORK_TREE"
     if [ `id -u` -eq 0 ]; then
       safe chown "${DEPLOYER_USER}:${DEPLOYER_GROUP}" "$GIT_WORK_TREE"
-      safe setuidgid -s "$DEPLOYER_USER" deployer-checkout "$git_url" "$branch"
+      safe setuidgid -s "$DEPLOYER_USER" env HOME=/nonexistent deployer-checkout "$git_url" "$branch"
     else
       safe deployer-checkout "$git_url" "$branch"
     fi
