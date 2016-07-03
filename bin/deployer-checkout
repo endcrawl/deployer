@@ -25,7 +25,7 @@ main()
   # If we use an ssh key, run under ssh-agent, and load it from stdin.
 
   if [ -n "$DEPLOYER_SSH_KEY" ]; then
-    test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$git_url" "$branch"
+    test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$git_url" "$branch" "$@"
     safe ssh-add /dev/stdin
     exec 0>/dev/null
   fi
