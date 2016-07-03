@@ -52,6 +52,7 @@ main()
   # Load any ssh key and make it accessible.
 
   if [ -n "$DEPLOYER_SSH_KEY" ]; then
+    test "${DEPLOYER_SSH_KEY#/}" != "$DEPLOYER_SSH_KEY" || barf "non-absolute path for DEPLOYER_SSH_KEY: $DEPLOYER_SSH_KEY"
     test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$unit" "$git_url" "$branch"
     safe ssh-add "$DEPLOYER_SSH_KEY"
     if [ `id -u` -eq 0 ]; then
