@@ -15,7 +15,7 @@ main()
   # Validate config we use.
 
   test -z "$GIT_WORK_TREE"  && barf "missing environment variable: GIT_WORK_TREE"
-  test -d "$GIT_WORK_TREE"  || barf "deploy root directory missing: GIT_WORK_TREE"
+  test -d "$GIT_WORK_TREE"  || barf "deploy directory missing: $GIT_WORK_TREE"
   test -z "$GIT_DIR"        && barf "missing environment variable: GIT_DIR"
 
   # If .git/ already exists, assume there's nothing to do.
