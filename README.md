@@ -7,7 +7,7 @@ More documentation to come.
 Requirements:
 
 - `git`
-- `setlock` from `daemontools`
+- `setlock` and `setuidgid` from `daemontools`
 - `trigger-listen` and `trigger-pull` from `trigger`
 - `fsq-run`
 - `shellsafe`
