@@ -30,7 +30,7 @@ main()
   if [ -n "$DEPLOYER_SSH_KEY" ]; then
     test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$unit" "$revision" "$@"
     safe ssh-add /dev/stdin
-    exec 0>/dev/null
+    exec 0</dev/null
   fi
 
   # Determine the active and inactive checkouts for this unit.

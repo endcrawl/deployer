@@ -27,7 +27,7 @@ main()
   if [ -n "$DEPLOYER_SSH_KEY" ]; then
     test -n "$SSH_AUTH_SOCK" || safe exec ssh-agent "$0" "$git_url" "$branch" "$@"
     safe ssh-add /dev/stdin
-    exec 0>/dev/null
+    exec 0</dev/null
   fi
 
   # Do the initial checkout (uses GIT_WORK_TREE and GIT_DIR).
