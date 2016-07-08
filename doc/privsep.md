@@ -1,13 +1,13 @@
 ### Introducing Settings for each Managed Unit
 
-A managed unit "foo" has its settings stored in a directory `$DEPLOYER_DATA_DIR/units/foo/`. For system installs, `DEPLOYER_DATA_DIR` is by default `/var/lib/deployer`.
+A managed unit "foo" has its settings stored in a directory `$DEPLOYER_UNITS_DIR/units/foo/`. For system installs, `DEPLOYER_UNITS_DIR` is by default `/var/lib/deployer`.
 
 For one thing, this allows the `deploy` program to `test -d` for whether a unit is managed, and bail early with an error message (or possibly just ignore) if it isn't.
 
 
 ### Privilege Separation
 
-When `deployer-queue` is running as root, the `$DEPLOYER_DATA_DIR/units/foo/DEPLOYER_USER` file determines which user account we drop privileges to before conducting any deployment operations. It's a fatal error if this file is missing and we're running as root.
+When `deployer-queue` is running as root, the `$DEPLOYER_UNITS_DIR/units/foo/DEPLOYER_USER` file determines which user account we drop privileges to before conducting any deployment operations. It's a fatal error if this file is missing and we're running as root.
 
 Since deployment operations can now happen under one of many user accounts, and, in most setups, the `git fetch` operation needs access to a shared ssh key, this presents a problem: ssh refuses to use an `~/.ssh/id_rsa` file that's group readable.
 

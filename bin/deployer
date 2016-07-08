@@ -22,17 +22,17 @@ main()
 
   # Validate config we use.
 
-  test -z "$DEPLOYER_DATA_DIR"    && barf "missing environment variable: DEPLOYER_DATA_DIR"
+  test -z "$DEPLOYER_UNITS_DIR"   && barf "missing environment variable: DEPLOYER_UNITS_DIR"
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
 
   # Verify that the unit is actually a managed deployment.
 
-  test ! -d "${DEPLOYER_DATA_DIR}/${unit}" && barf "unit is unmanaged: ${unit}"
+  test ! -d "${DEPLOYER_UNITS_DIR}/${unit}" && barf "unit is unmanaged: ${unit}"
 
   # Self-exec to put per-unit settings in environment, unless we've already done that.
 
-  test "$unit" = "$DEPLOYER_UNIT" || safe exec envdir "${DEPLOYER_DATA_DIR}/${unit}" "$0" "$unit" "$revision" "$@"
+  test "$unit" = "$DEPLOYER_UNIT" || safe exec envdir "${DEPLOYER_UNITS_DIR}/${unit}" "$0" "$unit" "$revision" "$@"
 
   # In privileged mode, some per-unit settings are required.
 

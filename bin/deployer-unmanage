@@ -18,8 +18,8 @@ main()
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
   test -z "$DEPLOYER_QUEUE"       && barf "missing environment variable: DEPLOYER_QUEUE"
   test -d "$DEPLOYER_QUEUE"       || barf "deploy root directory missing: $DEPLOYER_QUEUE"
-  test -z "$DEPLOYER_DATA_DIR"    && barf "missing environment variable: DEPLOYER_DATA_DIR"
-  test -d "$DEPLOYER_DATA_DIR"    || barf "deploy data directory missing: $DEPLOYER_DATA_DIR"
+  test -z "$DEPLOYER_UNITS_DIR"   && barf "missing environment variable: DEPLOYER_UNITS_DIR"
+  test -d "$DEPLOYER_UNITS_DIR"   || barf "deploy data directory missing: $DEPLOYER_UNITS_DIR"
 
   # Remove the per-unit directory for incoming deployer job requests.
 
@@ -27,7 +27,7 @@ main()
 
   # Remove the per-unit directory for settings.
 
-  safe rm -rf "${DEPLOYER_DATA_DIR}/${unit}"
+  safe rm -rf "${DEPLOYER_UNITS_DIR}/${unit}"
 
   # Remove the active symlink.
 
