@@ -60,6 +60,7 @@ main()
 
   export GIT_WORK_TREE="$path_new"
   export GIT_DIR="${path_new}/.git"
+  export GIT_SSH=deployer-git-ssh
   safe git fetch
 
   # Unload any per-unit ssh-key, so it's unavailable to the post-update command.

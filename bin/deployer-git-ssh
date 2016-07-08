@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ -n "$DEPLOYER_SSH_KNOWN_HOSTS" ]; then
+  exec ssh -o "UserKnownHostsFile=$DEPLOYER_SSH_KNOWN_HOSTS" "$@"
+else
+  exec ssh "$@"
+fi

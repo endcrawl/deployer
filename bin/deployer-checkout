@@ -32,6 +32,7 @@ main()
 
   # Do the initial checkout (uses GIT_WORK_TREE and GIT_DIR).
 
+  export GIT_SSH=deployer-git-ssh
   safe git init --shared=group
   safe git remote add origin "$git_url"
   safe git fetch origin
