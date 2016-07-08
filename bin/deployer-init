@@ -15,6 +15,7 @@ main()
   safe mkdir -p "$DEPLOYER_QUEUE/tmp"
   safe mkdir -p "$DEPLOYER_QUEUE/cur"
   safe mkdir -p "$DEPLOYER_QUEUE/new"
+  safe mkdir -p "$DEPLOYER_QUEUE/req"
   safe mkdir -p "$DEPLOYER_QUEUE/fail"
   safe mkdir -p "$DEPLOYER_UNITS_DIR"
   safe mkdir -p "$DEPLOYER_LOCK_DIR/unit"
