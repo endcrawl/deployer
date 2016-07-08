@@ -5,7 +5,7 @@
 if [ -n "$DEPLOYER_CONFIG" ]; then
   safe . "$DEPLOYER_CONFIG"
 else
-  for conf in /etc/deployer.conf /usr/local/etc/deployer.conf /opt/local/etc/deployer.conf "$HOME"/deployer.conf; do
+  for conf in /etc/deployer.conf /usr/local/etc/deployer.conf /opt/local/etc/deployer.conf "$HOME"/.deployer.conf; do
     if [ -f "$conf" ]; then
       safe . "$conf"
     fi
