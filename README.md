@@ -23,7 +23,7 @@ make -B check
 Fear not; many of these manual steps will be automated.
 
 - First, create a config file for `deployer`:
-  - For user installs, this is `~/deployer.conf`.
+  - For user installs, this is `~/.deployer.conf`.
   - For system installs, this is `$PREFIX/etc/deployer.conf`.
   - [x] Provide an example conf file to start with.
   - [ ] Make this easier for user installs.
