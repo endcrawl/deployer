@@ -1,5 +1,5 @@
 SHELL = bash -o pipefail -c
-PATH := $(PATH):$(CURDIR)/../bin:$(CURDIR)/bin
+PATH := $(CURDIR)/../bin:$(CURDIR)/bin:$(PATH)
 export PATH
 
 TEST_CASES   = $(shell find case -type f | sort)
