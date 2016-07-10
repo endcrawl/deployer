@@ -4,7 +4,7 @@
 
 workdir="$1" ; shift ; export workdir
 
-export DEPLOYER_MANAGE_FLAGS=-x
+export DEPLOYER_INPLACE=1
 
 safe . deployer-setup-tests
 

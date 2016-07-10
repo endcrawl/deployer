@@ -41,5 +41,5 @@ rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
 # Setup: create the initial deployer a & b checkouts.
 
-safe deployer-manage $DEPLOYER_MANAGE_FLAGS foo "$workdir/foo"
+safe deployer-manage foo "$workdir/foo"
 
