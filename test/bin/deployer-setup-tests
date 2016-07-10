@@ -12,6 +12,13 @@ export DEPLOYER_DEPLOY_ROOT="$workdir"/deploys
 export DEPLOYER_CONCURRENCY=1
 export DEPLOYER_RETRY_DELAY=0
 
+# In privileged mode (running as root), extra settings are required.
+
+if [ `id -u` -eq 0 ]; then
+  export DEPLOYER_USER=root
+  export DEPLOYER_GROUP=root
+fi
+
 # Deployer setup.
 
 safe rm -rf "$workdir"
