@@ -44,8 +44,8 @@ main()
 
   export GIT_WORK_TREE="$path_old"
   export GIT_DIR="${path_old}/.git"
-  revision_old=`safe git rev-parse HEAD`
-  test -n "$revision_old" || barf "error getting current revision for: ${target_old}"
+  commit_old=`safe git rev-parse HEAD`
+  test -n "$commit_old" || barf "error getting current revision for: ${target_old}"
   branch_old=`git symbolic-ref HEAD 2>/dev/null`
   branch_old=${branch_old##refs/heads/}
 
@@ -70,11 +70,11 @@ main()
   # See if the inactive checkout would differ from the active one.
 
   differs=0
-  if [ "x"`git cat-file -t "$revision_old" 2>/dev/null` != "xcommit" ]; then
+  if [ "x"`git cat-file -t "$commit_old" 2>/dev/null` != "xcommit" ]; then
     # This commit might not even exist anymore (eg was deleted in force push).
     differs=1
   else
-    git diff --quiet "$revision_old" origin/"$revision"
+    git diff --quiet "$commit_old" origin/"$revision"
     rc=$?
     case $rc in
       0|1) differs="$rc" ;;
