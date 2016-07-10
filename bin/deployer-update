@@ -67,19 +67,20 @@ main()
 
   test -z "$DEPLOYER_SSH_KEY" || safe ssh-add -D
 
+  # Get the new commit hash.
+
+  commit_new=`safe git rev-parse origin/"$revision"`
+  test -n "$commit_new" || barf "error getting current revision for: ${target_old}"
+
   # See if the inactive checkout would differ from the active one.
 
   differs=0
   if [ "x"`git cat-file -t "$commit_old" 2>/dev/null` != "xcommit" ]; then
     # This commit might not even exist anymore (eg was deleted in force push).
     differs=1
-  else
-    git diff --quiet "$commit_old" origin/"$revision"
-    rc=$?
-    case $rc in
-      0|1) differs="$rc" ;;
-      *) barf "git-diff failed with exit code: $rc" ;;
-    esac
+  elif [ "$commit_old" != "$commit_new" ]; then
+    # Content hashes differ, so trees must differ.
+    differs=1
   fi
 
   # Exit with special status if it would be identical to the active checkout.
