@@ -25,7 +25,7 @@ safe deploy foo feature
 
 (
   safe cd "$DEPLOYER_QUEUE"
-  safe deployer-queue 
+  safe deployer-queue
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
@@ -57,7 +57,7 @@ safe deploy foo master
 
 (
   safe cd "$DEPLOYER_QUEUE"
-  safe deployer-queue 
+  safe deployer-queue
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
