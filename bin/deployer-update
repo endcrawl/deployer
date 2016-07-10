@@ -81,6 +81,9 @@ main()
   elif [ "$commit_old" != "$commit_new" ]; then
     # Content hashes differ, so trees must differ.
     differs=1
+  elif [ -n "$branch_old" -a "$branch_old" != "$revision" ]; then
+    # Content hashes may be identical, but branch names differ, so force a switch.
+    differs=1
   fi
 
   # Exit with special status if it would be identical to the active checkout.
