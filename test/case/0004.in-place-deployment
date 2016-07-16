@@ -4,7 +4,7 @@
 
 workdir="$1" ; shift ; export workdir
 
-export DEPLOYER_INPLACE=1
+export DEPLOYER_IN_PLACE=1
 
 safe . deployer-setup-tests
 
