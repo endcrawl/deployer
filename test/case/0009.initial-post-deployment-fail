@@ -1,0 +1,16 @@
+#!/bin/sh
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+
+workdir="$1" ; shift ; export workdir
+
+export DEPLOYER_COMMAND=false
+
+(
+  safe . deployer-setup-tests
+)
+rc="$?"
+safe test "$rc" -gt 0
+
+exit 0
+
