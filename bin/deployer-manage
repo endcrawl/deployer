@@ -1,15 +1,17 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} [-x] [-k path/to/ssh/key] [-u user] [-g group] <unit> <git-url> [<branch>]"; }
+usage() { echo "usage: ${0##*/} [-x] [-k path/to/ssh/key] [-c command] [-u user] [-g group] <unit> <git-url> [<branch>]"; }
 
 main()
 {
   DEPLOYER_INPLACE=${DEPLOYER_INPLACE:-0}
+  DEPLOYER_COMMAND=${DEPLOYER_COMMAND:-make}
 
   while [ $# -gt 0 ]; do
     case "$1" in
          -x) DEPLOYER_INPLACE=1    ; shift ;;
          -k) DEPLOYER_SSH_KEY="$2" ; shift ; shift ;;
+         -c) DEPLOYER_COMMAND="$2" ; shift ; shift ;;
          -u) DEPLOYER_USER="$2"    ; shift ; shift ;;
          -g) DEPLOYER_GROUP="$2"   ; shift ; shift ;;
          -h) usage ; exit 0 ;;
@@ -19,6 +21,7 @@ main()
   done
   export DEPLOYER_INPLACE
   export DEPLOYER_SSH_KEY
+  export DEPLOYER_COMMAND
   export DEPLOYER_USER
   export DEPLOYER_GROUP
 
@@ -40,6 +43,7 @@ main()
   test -d "$DEPLOYER_QUEUE"       || barf "deploy root directory missing: $DEPLOYER_QUEUE"
   test -z "$DEPLOYER_UNITS_DIR"   && barf "missing environment variable: DEPLOYER_UNITS_DIR"
   test -d "$DEPLOYER_UNITS_DIR"   || barf "deploy data directory missing: $DEPLOYER_UNITS_DIR"
+  test -z "$DEPLOYER_COMMAND"     && barf "missing environment variable: DEPLOYER_COMMAND"
   test -z "$DEPLOYER_USER"        || DEPLOYER_GROUP=${DEPLOYER_GROUP:-`id -ng "$DEPLOYER_USER"`} || barf "gid error for $DEPLOYER_USER"
 
   # In privileged mode, some per-unit settings are required.
@@ -62,6 +66,7 @@ main()
   test -z "$DEPLOYER_SSH_KEY" || safe printf "%s" "$DEPLOYER_SSH_KEY" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_SSH_KEY"
   test -z "$DEPLOYER_USER"    || safe printf "%s" "$DEPLOYER_USER"    > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_USER"
   test -z "$DEPLOYER_GROUP"   || safe printf "%s" "$DEPLOYER_GROUP"   > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_GROUP"
+                                 safe printf "%s" "$DEPLOYER_COMMAND" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_COMMAND"
                                  safe printf "%s" "$unit"             > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_UNIT"
 
   # Create a per-unit directory for incoming deployer job requests.

@@ -24,6 +24,7 @@ main()
 
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
+  test -z "$DEPLOYER_COMMAND"     && barf "missing environment variable: DEPLOYER_COMMAND"
 
   # If we use an ssh key, run under ssh-agent, and load it from stdin.
 
@@ -98,12 +99,12 @@ main()
   ( safe cd "$GIT_WORK_TREE" && git stash )
   safe git checkout -B "$revision" origin/"$revision"
 
-  # Run the tail program (typically just `make`) to do post-update tasks.
+  # Run the DEPLOYER_COMMAND program (typically just `make`) to do post-update tasks.
   # Touch a file to indicate that a new deployment happened.
 
   (
     safe cd "$path_new"
-    test $# -eq 0 || safe "$@" 1>&2
+    test $# -eq 0 || safe "$DEPLOYER_COMMAND" 1>&2
     safe touch .deployed
   )
   rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
