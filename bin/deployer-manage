@@ -104,7 +104,7 @@ main()
 
   # Report on the current situation.
 
-  log 2 "set up initial checkout:" "$unit" `deployer-inspect -b -v -a "$unit"`
+  log 2 "deployed:" "$unit" `deployer-inspect -b -v -a "$unit"`
 
   return 0
 }
