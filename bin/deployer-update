@@ -107,9 +107,8 @@ main()
     safe "$DEPLOYER_COMMAND" 1>&2
     safe touch .deployed
   )
-  rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
 
-  return 0
+  return $?
 }
 
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
