@@ -38,7 +38,14 @@ main()
   safe git fetch origin
   safe git checkout -f "$branch"
 
-  return 0
+  # Run the initial post-deployment command.
+
+  (
+    safe cd "$GIT_WORK_TREE"
+    safe make
+  )
+
+  return $?
 }
 
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
