@@ -104,7 +104,7 @@ main()
 
   (
     safe cd "$path_new"
-    test $# -eq 0 || safe "$DEPLOYER_COMMAND" 1>&2
+    safe "$DEPLOYER_COMMAND" 1>&2
     safe touch .deployed
   )
   rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
