@@ -14,7 +14,7 @@ clean :
 	@ rm -rf out/* work/* pass/* fail/*
 
 out/% : case/%
-	@ printf "[test] %-32s ... " $*
+	@ printf "[test] %-40s ... " $*
 	@ if env - PATH="$$PATH" $^ "$(CURDIR)"/work/$* >$@ 2>&1; then \
 	    printf "pass\n" ; \
 	    touch pass/$* ; \
