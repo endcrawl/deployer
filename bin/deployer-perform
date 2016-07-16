@@ -70,11 +70,13 @@ main()
     safe cd "${DEPLOYER_DEPLOY_ROOT}/.tmp"
     safe mv "$unit" ..
   )
-  rc="$?" ; if [ "$rc" -ne 0 ]; then return "$rc"; fi
+  rc="$?"
 
-  log 2 "switched active checkout to: ${target_new}"
+  if [ $rc -eq 0 ]; then
+    log 2 "switched active checkout to: ${target_new}"
+  fi
 
-  return 0
+  return $rc
 }
 
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
