@@ -1,0 +1,45 @@
+#!/bin/sh
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+
+workdir="$1" ; shift ; export workdir
+
+safe . deployer-setup-tests
+
+# Test: commit a post-deploy breakage to the source git repository.
+
+(
+  safe cd "$workdir/foo"
+  safe printf "all :\n\tfalse\n" > Makefile
+  safe git add -u Makefile
+  safe touch 2.txt
+  safe git add 2.txt
+  safe git commit -m 2
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Test: request a new deployment (inject a job file into the queue).
+
+safe deploy foo master
+
+# Test: run a deployment queue pass, which should process all jobs.
+# Note: don't check exit status of deployer-queue, it's likely a failure
+# because the one job failed, but we don't want to insist on that behavior.
+
+(
+  safe cd "$DEPLOYER_QUEUE"
+  safe deployer-queue 
+)
+
+# Test: check that the initial deployment failed because the post-deploy failed.
+
+(
+  safe cd "$DEPLOYER_DEPLOY_ROOT"
+  safe test -L foo
+  safe test "`readlink foo`" = "foo.a"
+  safe test ! -f foo/2.txt
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+exit 0
+
