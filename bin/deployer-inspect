@@ -1,17 +1,19 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} [-b] [-a|-i] <unit>"; }
+usage() { echo "usage: ${0##*/} [-b] [-a|-i] [-v] <unit>"; }
 
 main()
 {
   what='active'
   backend=0
+  verbose=0
 
   while [ $# -gt 0 ]; do
     case "$1" in
          -a) what='active'   ; shift ;;
          -i) what='inactive' ; shift ;;
          -b) backend=1       ; shift ;;
+         -v) verbose=1       ; shift ;;
          -h) usage ; exit 0 ;;
          -*) barf "unknown option: $1" ;;
           *) break ;;
@@ -80,6 +82,18 @@ main()
     active)   what="$target_active" ;;
     inactive) what="$target_inactive" ;;
   esac
+
+  # In verbose mode, also output commit hash and branch.
+
+  if [ "$verbose" -gt 0 ]; then
+    export GIT_WORK_TREE="${deploy_root}/${what}"
+    export GIT_DIR="${deploy_root}/${what}/.git"
+    branch=`git symbolic-ref HEAD 2>/dev/null`
+    branch="${branch##refs/heads/}"
+    branch="${branch:-(detached)}"
+    info=`git log -n 1 --pretty="%h %s" HEAD`
+    what="${what} ${branch} ${info}"
+  fi
 
   safe printf "%s\n" "$what"
 
