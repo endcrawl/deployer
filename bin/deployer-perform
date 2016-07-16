@@ -73,7 +73,7 @@ main()
   rc="$?"
 
   if [ $rc -eq 0 ]; then
-    log 2 "switched active checkout to: ${target_new}"
+    log 2 "switched active checkout:" "$unit" `deployer-inspect -b -v -a "$unit"`
   fi
 
   return $rc
