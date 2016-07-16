@@ -102,6 +102,10 @@ main()
 
   test -e "$DEPLOYER_DEPLOY_ROOT/${unit}" || safe ln -s "$target_default" "$DEPLOYER_DEPLOY_ROOT/${unit}"
 
+  # Report on the current situation.
+
+  log 2 "set up initial checkout:" "$unit" `deployer-inspect -b -v -a "$unit"`
+
   return 0
 }
 
