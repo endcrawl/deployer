@@ -30,7 +30,7 @@ main()
 
   # Verify that the unit is actually a managed deployment.
 
-  test ! -d "${DEPLOYER_UNITS_DIR}/${unit}" && barf "unit is unmanaged: ${unit}" 99
+  test ! -d "${DEPLOYER_UNITS_DIR}/${unit}" && { shout "unit is unmanaged: ${unit}" ; exit 99 ; }
 
   # Generate the job file name.
 
