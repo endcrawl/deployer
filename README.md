@@ -32,9 +32,7 @@ Fear not; many of these manual steps will be automated.
   - [ ] Provide binary packages that handle installation.
 
 - Create the necessary filesystem structure.
-  - [x] Write `deployer-init`.
-  - [x] Write `deployer-manage`.
-  - [x] Write `deployer-unmanage`.
+  - `deployer-init`
 
 - Set up a `daemontools` service which runs `deployer-service`.
   - [ ] Provide something to make this easier.
@@ -58,15 +56,4 @@ deploy foo master
 ```
 tail -n 100 -f /var/service/deployer/log/main/current
 ```
-
-### TODO
-
-- [x] `deployer-manage` should create the initial symlink.
-- [x] `deployer` should take one less argument and get deploy root from env.
-- [x] `deployer-queue` should take one less argument and cd to the queue dir specified by env.
-- [x] make `trigger-pull` quieter if nothing's listening on the fifo:
-  - `trigger-pull: fatal: cannot open var/lib/deployer/trigger.fifo: device not configured`
-- [x] eliminate the `git stash` warning:
-  - fatal: /usr/lib/git-core/git-stash cannot be used without a working tree.
-
 
