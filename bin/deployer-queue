@@ -7,11 +7,12 @@ safe cd "$DEPLOYER_QUEUE"
 
 # Move deploy job files from the per-unit request directories into processing.
 
-safe find req -mindepth 2 -maxdepth 2 -type f |
-safe sed -Ee 's@^req/([^/]+)/@\1 @' |
-while read unit file; do
-  safe mv "req/${unit}/${file}" "new/${unit}.${file}"
-done
+safe find req -mindepth 2 -maxdepth 2 -type f | {
+  IFS=/
+  while read req unit file; do
+    safe mv "req/${unit}/${file}" "new/${unit}.${file}"
+  done
+}
 
 exec fsq-run -v -Q new -D cur -A deployer-after-job . deployer-worker
 
