@@ -11,6 +11,7 @@ export DEPLOYER_BOUNCED_DIR="$workdir"/bounced
 export DEPLOYER_DEPLOY_ROOT="$workdir"/deploys
 export DEPLOYER_CONCURRENCY=1
 export DEPLOYER_RETRY_DELAY=0
+export UNIT="${UNIT:-foo}"
 
 # In privileged mode (running as root), extra settings are required.
 
@@ -27,9 +28,9 @@ safe deployer-init
 
 # Setup: create a new git repository.
 
-safe mkdir -p "$workdir/foo"
+safe mkdir -p "$workdir/$UNIT"
 (
-  safe cd "$workdir/foo"
+  safe cd "$workdir/$UNIT"
   safe git init .
   safe echo "all : " > Makefile
   safe git add Makefile
@@ -41,5 +42,5 @@ rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
 # Setup: create the initial deployer a & b checkouts.
 
-safe deployer-manage foo "$workdir/foo"
+safe deployer-manage "$UNIT" "$workdir/$UNIT"
 

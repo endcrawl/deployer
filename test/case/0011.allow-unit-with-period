@@ -1,0 +1,44 @@
+#!/bin/sh
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+
+workdir="$1" ; shift ; export workdir
+
+export UNIT="foo.bar"
+
+safe . deployer-setup-tests
+
+# Test: make a new commit to the source git repository.
+
+(
+  safe cd "$workdir/$UNIT"
+  safe touch 2.txt
+  safe git add 2.txt
+  safe git commit -m 2
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Test: request a new deployment (inject a job file into the queue).
+
+safe deploy "$UNIT" master
+
+# Test: run a deployment queue pass, which should process all jobs.
+
+(
+  safe cd "$DEPLOYER_QUEUE"
+  safe deployer-queue 
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Test: check that the initial deployment worked and got the latest commit.
+
+(
+  safe cd "$DEPLOYER_DEPLOY_ROOT"
+  safe test -L "$UNIT"
+  safe test "`readlink $UNIT`" = "${UNIT}.b"
+  safe test -f $UNIT/2.txt
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+exit 0
+
