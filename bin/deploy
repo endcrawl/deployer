@@ -12,13 +12,13 @@ main()
   unit="$1" ; shift
   revision="${1:-_}"
 
-  # Validate unit and revision against unsafe path chars.
+  # Validate unit and revision against unsafe chars.
 
-  for a in "$unit" "$revision"; do
-    test -z "$a"            && barf "missing unit or revision"
-    test "$a" != "${a##*.}" && barf "invalid unit or revision: $a"
-    test "$a" != "${a##*/}" && barf "invalid unit or revision: $a"
-  done
+  test -z "$unit"               && barf "missing unit"
+  test "$unit" = "."            && barf "invalid unit: $unit"
+  test "$unit" = ".."           && barf "invalid unit: $unit"
+  test "$unit" != "${unit##*/}" && barf "invalid unit: $unit"
+  test -z "$revision"           && barf "missing revision"
 
   # Source config files in.
 
@@ -34,9 +34,10 @@ main()
 
   # Generate the job file name.
 
+  revision_escaped=`job_escape "$revision"`
   jobdatetime=`date +%Y%m%d.%H%M%S`
   jobrandom=`od -N 4 -t x4 -A n -v < /dev/urandom | sed -e 's/^ //'`
-  jobname="${revision}.${jobdatetime}.${jobrandom}"
+  jobname="${revision_escaped}.${jobdatetime}.${jobrandom}"
 
   # Enqueue a new job file.
 
@@ -49,6 +50,10 @@ main()
   [ -n "$DEPLOYER_TRIGGER" ] && trigger-pull "$DEPLOYER_TRIGGER" >/dev/null 2>&1
 
   return 0
+}
+
+job_escape() {
+  printf "%s" "$1" | sed -e 's/%/%26/g; s/\//%2f/g; s/\./%2e/g'
 }
 
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }

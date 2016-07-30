@@ -14,6 +14,15 @@ main()
   [ -z "$unit"     ] && barf "cannot parse unit from jobfile: $FSQ_JOB" 100
   [ -z "$revision" ] && barf "cannot parse revision from jobfile: $FSQ_JOB" 100
 
+  unit=`job_unescape "$unit"`
+  revision=`job_unescape "$revision"`
+
+  # Validate unit against unsafe chars.
+
+  [ "$unit" = "."            ] && barf "invalid unit: $unit"
+  [ "$unit" = ".."           ] && barf "invalid unit: $unit"
+  [ "$unit" != "${unit##*/}" ] && barf "invalid unit: $unit"
+
   # Only one deploy is allowed to run at a time for a given unit.
   # Grab the per-unit lock, or fail immediately if already locked.
   # On lock success, record it with an env var and re-execute self.
@@ -40,6 +49,10 @@ main()
 
   [ $rc -eq 99 ] && rc=0
   return $rc
+}
+
+job_unescape() {
+  printf "%s" "$1" | sed -e 's/%%/%/g; s/%2f/\//g; s/%2e/\./g'
 }
 
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
