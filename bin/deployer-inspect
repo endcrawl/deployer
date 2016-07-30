@@ -29,9 +29,10 @@ main()
 
   # Validate unit.
 
-  test -z "$unit"                 && barf "missing unit"
-  test "$unit" != "${unit##*.}"   && barf "invalid unit: $unit"
-  test "$unit" != "${unit##*/}"   && barf "invalid unit: $unit"
+  test -z "$unit"               && barf "missing unit"
+  test "$unit" = "."            && barf "invalid unit: $unit"
+  test "$unit" = ".."           && barf "invalid unit: $unit"
+  test "$unit" != "${unit##*/}" && barf "invalid unit: $unit"
 
   # Automatically configure unless we're in backend mode.
 

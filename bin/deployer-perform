@@ -14,11 +14,11 @@ main()
 
   # Validate unit and revision against unsafe path chars.
 
-  for a in "$unit" "$revision"; do
-    test -z "$a"            && barf "missing unit or revision"
-    test "$a" != "${a##*.}" && barf "invalid unit or revision: $a"
-    test "$a" != "${a##*/}" && barf "invalid unit or revision: $a"
-  done
+  test -z "$unit"               && barf "missing unit"
+  test "$unit" = "."            && barf "invalid unit: $unit"
+  test "$unit" = ".."           && barf "invalid unit: $unit"
+  test "$unit" != "${unit##*/}" && barf "invalid unit: $unit"
+  test -z "$revision"           && barf "missing revision"
 
   # Validate config we use.
 
