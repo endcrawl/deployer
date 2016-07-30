@@ -1,0 +1,50 @@
+#!/bin/sh
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+
+workdir="$1" ; shift ; export workdir
+
+export DEPLOYER_CONFIG=/dev/null
+export DEPLOYER_QUEUE="$workdir"/queue
+export DEPLOYER_TRIGGER="$workdir"/trigger.fifo
+export DEPLOYER_UNITS_DIR="$workdir"/units
+export DEPLOYER_LOCK_DIR="$workdir"/lock
+export DEPLOYER_BOUNCED_DIR="$workdir"/bounced
+export DEPLOYER_DEPLOY_ROOT="$workdir"/deploys
+export DEPLOYER_CONCURRENCY=1
+export DEPLOYER_RETRY_DELAY=0
+
+# In privileged mode (running as root), extra settings are required.
+
+if [ `id -u` -eq 0 ]; then
+  export DEPLOYER_USER=root
+  export DEPLOYER_GROUP=root
+fi
+
+# Deployer setup.
+
+safe rm -rf "$workdir"
+safe mkdir -p "$workdir"
+safe deployer-init
+
+# Setup: create a new git repository.
+
+safe mkdir -p "$workdir/foobar"
+(
+  safe cd "$workdir/foobar"
+  safe git init .
+  safe echo "all : " > Makefile
+  safe git add Makefile
+  safe touch 1.txt
+  safe git add 1.txt
+  safe git commit -m 1
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Setup: create the initial deployer a & b checkouts.
+
+deployer-manage "foo/bar" "$workdir/foobar" && barf "deployer-manage: allowed slash in unit"
+deploy "foo/bar" && barf "deploy: allowed slash in unit"
+
+exit 0
+
