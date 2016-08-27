@@ -50,7 +50,7 @@ main()
   if [ `id -u` -eq 0 ]; then
     {
       safe chown "${DEPLOYER_USER}:${DEPLOYER_GROUP}" /dev/stdin
-      setuidgid -s "$DEPLOYER_USER" env HOME=/nonexistent deployer-update "$unit" "$revision" "$@" || exit $?
+      setuidgid -s "$DEPLOYER_USER" env HOME=`eval echo ~$DEPLOYER_USER` deployer-update "$unit" "$revision" "$@" || exit $?
     } < "${DEPLOYER_SSH_KEY:-/dev/null}" || exit $?
   else
     deployer-update "$unit" "$revision" "$@" < "${DEPLOYER_SSH_KEY:-/dev/null}" || exit $?
