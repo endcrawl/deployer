@@ -93,6 +93,7 @@ main()
       {
         safe chown "${DEPLOYER_USER}:${DEPLOYER_GROUP}" /dev/stdin
         safe setuidgid -s "$DEPLOYER_USER" env HOME=`eval echo ~$DEPLOYER_USER` deployer-checkout "$git_url" "$branch"
+        safe chgrp "$DEPLOYER_GROUP" "$GIT_WORK_TREE"
       } < "${DEPLOYER_SSH_KEY:-/dev/null}"
     else
       safe deployer-checkout "$git_url" "$branch" < "${DEPLOYER_SSH_KEY:-/dev/null}"
