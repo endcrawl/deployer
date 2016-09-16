@@ -9,7 +9,7 @@ main()
 
   while [ $# -gt 0 ]; do
     case "$1" in
-         -x) DEPLOYER_IN_PLACE=1    ; shift ;;
+         -x) DEPLOYER_IN_PLACE=1   ; shift ;;
          -k) DEPLOYER_SSH_KEY="$2" ; shift ; shift ;;
          -c) DEPLOYER_COMMAND="$2" ; shift ; shift ;;
          -u) DEPLOYER_USER="$2"    ; shift ; shift ;;
