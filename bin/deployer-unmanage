@@ -30,15 +30,15 @@ main()
 
   safe rm -rf "${DEPLOYER_UNITS_DIR}/${unit}"
 
-  # Remove the active symlink.
+  # Remove the active symlink, if any.
 
-  symlink="$DEPLOYER_DEPLOY_ROOT/${unit}"
-  test -L "$symlink" && safe rm "$symlink"
+  path="$DEPLOYER_DEPLOY_ROOT/${unit}"
+  test -L "$path" && safe rm "$path"
 
-  # Remove both foo.a/ and foo.b/ directories.
+  # Remove foo.a/, foo.b/, and foo/ directories.
 
-  for suffix in a b; do
-    dir="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
+  for checkout in "${unit}.a" "${unit}.b" "$unit"; do
+    dir="$DEPLOYER_DEPLOY_ROOT/$checkout"
     test -d "$dir" && rm -rf "$dir"
   done
 
