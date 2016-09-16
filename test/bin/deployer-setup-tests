@@ -12,6 +12,7 @@ export DEPLOYER_DEPLOY_ROOT="$workdir"/deploys
 export DEPLOYER_CONCURRENCY=1
 export DEPLOYER_RETRY_DELAY=0
 export UNIT="${UNIT:-foo}"
+export DEPLOYER_BASENAME="${DEPLOYER_BASENAME:-$UNIT}"
 
 # In privileged mode (running as root), extra settings are required.
 

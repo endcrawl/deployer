@@ -1,0 +1,52 @@
+#!/bin/sh
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+
+workdir="$1" ; shift ; export workdir
+
+export DEPLOYER_IN_PLACE=1
+export DEPLOYER_BASENAME=bar
+
+safe . deployer-setup-tests
+
+# Test: check that the in-place deployment setup worked.
+
+(
+  safe cd "$DEPLOYER_DEPLOY_ROOT"
+  safe test -d bar
+)
+
+# Test: make a new commit to the source git repository.
+
+(
+  safe cd "$workdir/foo"
+  safe touch 2.txt
+  safe git add 2.txt
+  safe git commit -m 2
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Test: request a new deployment (inject a job file into the queue).
+
+safe deploy foo master
+
+# Test: run a deployment queue pass, which should process all jobs.
+
+(
+  safe cd "$DEPLOYER_QUEUE"
+  safe deployer-queue
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+# Test: check that the initial deployment worked,
+# got the latest commit, but still points to the same checkout.
+
+(
+  safe cd "$DEPLOYER_DEPLOY_ROOT"
+  safe test -d bar
+  safe test -f bar/2.txt
+)
+rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
+
+exit 0
+
