@@ -75,18 +75,18 @@ main()
 
   safe mkdir -p "${DEPLOYER_QUEUE}/req/${unit}"
 
-  # Create foo.a/ and foo.b/ directories (or just foo.x/ if in-place) under the deploy root.
+  # Create foo.a/ and foo.b/ directories (or just foo/ if in-place) under the deploy root.
 
   if [ "$DEPLOYER_IN_PLACE" -gt 0 ]; then
-    suffixes="x"
-    target_default="${unit}.x"
+    checkouts="${unit}"
+    target_default="${unit}"
   else
-    suffixes="a b"
+    checkouts="${unit}.a ${unit}.b"
     target_default="${unit}.a"
   fi
 
-  for suffix in $suffixes; do
-    export GIT_WORK_TREE="$DEPLOYER_DEPLOY_ROOT/${unit}.${suffix}"
+  for checkout in $checkouts; do
+    export GIT_WORK_TREE="$DEPLOYER_DEPLOY_ROOT/$checkout"
     export GIT_DIR="${GIT_WORK_TREE}/.git"
     safe mkdir -p "$GIT_WORK_TREE"
     if [ `id -u` -eq 0 ]; then
@@ -103,7 +103,9 @@ main()
 
   # Ensure one of foo.a/ and foo.b/ is active (has the foo symlink pointing to it).
 
-  test -e "$DEPLOYER_DEPLOY_ROOT/${unit}" || safe ln -s "$target_default" "$DEPLOYER_DEPLOY_ROOT/${unit}"
+  if [ "$DEPLOYER_IN_PLACE" -eq 0 ]; then
+    test -e "$DEPLOYER_DEPLOY_ROOT/${unit}" || safe ln -s "$target_default" "$DEPLOYER_DEPLOY_ROOT/${unit}"
+  fi
 
   # Report on the current situation.
 
