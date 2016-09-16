@@ -21,6 +21,7 @@ main()
   test -d "$DEPLOYER_QUEUE"       || barf "deploy root directory missing: $DEPLOYER_QUEUE"
   test -z "$DEPLOYER_UNITS_DIR"   && barf "missing environment variable: DEPLOYER_UNITS_DIR"
   test -d "$DEPLOYER_UNITS_DIR"   || barf "deploy data directory missing: $DEPLOYER_UNITS_DIR"
+  test -z "$DEPLOYER_BASENAME"    && barf "missing environment variable: DEPLOYER_BASENAME"
 
   # Remove the per-unit directory for incoming deployer job requests.
 
@@ -32,12 +33,13 @@ main()
 
   # Remove the active symlink, if any.
 
-  path="$DEPLOYER_DEPLOY_ROOT/${unit}"
+  basename="$DEPLOYER_BASENAME"
+  path="$DEPLOYER_DEPLOY_ROOT/$basename"
   test -L "$path" && safe rm "$path"
 
   # Remove foo.a/, foo.b/, and foo/ directories.
 
-  for checkout in "${unit}.a" "${unit}.b" "$unit"; do
+  for checkout in "${basename}.a" "${basename}.b" "$basename"; do
     dir="$DEPLOYER_DEPLOY_ROOT/$checkout"
     test -d "$dir" && rm -rf "$dir"
   done

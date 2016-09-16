@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} [-x] [-k path/to/ssh/key] [-c command] [-u user] [-g group] <unit> <git-url> [<branch>]"; }
+usage() { echo "usage: ${0##*/} [-x] [-k path/to/ssh/key] [-c command] [-u user] [-g group] [-b basename] <unit> <git-url> [<branch>]"; }
 
 main()
 {
@@ -9,11 +9,12 @@ main()
 
   while [ $# -gt 0 ]; do
     case "$1" in
-         -x) DEPLOYER_IN_PLACE=1   ; shift ;;
-         -k) DEPLOYER_SSH_KEY="$2" ; shift ; shift ;;
-         -c) DEPLOYER_COMMAND="$2" ; shift ; shift ;;
-         -u) DEPLOYER_USER="$2"    ; shift ; shift ;;
-         -g) DEPLOYER_GROUP="$2"   ; shift ; shift ;;
+         -x) DEPLOYER_IN_PLACE=1    ; shift ;;
+         -k) DEPLOYER_SSH_KEY="$2"  ; shift ; shift ;;
+         -c) DEPLOYER_COMMAND="$2"  ; shift ; shift ;;
+         -u) DEPLOYER_USER="$2"     ; shift ; shift ;;
+         -g) DEPLOYER_GROUP="$2"    ; shift ; shift ;;
+         -b) DEPLOYER_BASENAME="$2" ; shift ; shift ;;
          -h) usage ; exit 0 ;;
          -*) barf "unknown option: $1" ;;
           *) break ;;
@@ -24,6 +25,7 @@ main()
   export DEPLOYER_COMMAND
   export DEPLOYER_USER
   export DEPLOYER_GROUP
+  export DEPLOYER_BASENAME
 
   if [ $# -lt 2 ]; then
     usage 1>&2
@@ -46,6 +48,7 @@ main()
   test -d "$DEPLOYER_UNITS_DIR"   || barf "deploy data directory missing: $DEPLOYER_UNITS_DIR"
   test -z "$DEPLOYER_COMMAND"     && barf "missing environment variable: DEPLOYER_COMMAND"
   test -z "$DEPLOYER_USER"        || DEPLOYER_GROUP=${DEPLOYER_GROUP:-`id -ng "$DEPLOYER_USER"`} || barf "gid error for $DEPLOYER_USER"
+  test -n "$DEPLOYER_BASENAME"    || DEPLOYER_BASENAME="$unit"
 
   # In privileged mode, some per-unit settings are required.
 
@@ -69,6 +72,7 @@ main()
   test -z "$DEPLOYER_GROUP"   || safe printf "%s" "$DEPLOYER_GROUP"    > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_GROUP"
                                  safe printf "%s" "$DEPLOYER_COMMAND"  > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_COMMAND"
                                  safe printf "%s" "$DEPLOYER_IN_PLACE" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_IN_PLACE"
+                                 safe printf "%s" "$DEPLOYER_BASENAME" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_BASENAME"
                                  safe printf "%s" "$unit"              > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_UNIT"
 
   # Create a per-unit directory for incoming deployer job requests.
@@ -77,12 +81,14 @@ main()
 
   # Create foo.a/ and foo.b/ directories (or just foo/ if in-place) under the deploy root.
 
+  basename="$DEPLOYER_BASENAME"
+
   if [ "$DEPLOYER_IN_PLACE" -gt 0 ]; then
-    checkouts="${unit}"
-    target_default="${unit}"
+    checkouts="$basename"
+    target_default="$basename"
   else
-    checkouts="${unit}.a ${unit}.b"
-    target_default="${unit}.a"
+    checkouts="${basename}.a ${basename}.b"
+    target_default="$basename.a"
   fi
 
   for checkout in $checkouts; do

@@ -42,13 +42,15 @@ main()
 
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
+  test -z "$DEPLOYER_BASENAME"    && barf "missing environment variable: DEPLOYER_BASENAME"
 
   # Require existing .a & .b directories, or a bare directory if we're in update-in-place mode.
 
   deploy_root="$DEPLOYER_DEPLOY_ROOT"
-  path="${deploy_root}/${unit}"
-  path_a="${deploy_root}/${unit}.a"
-  path_b="${deploy_root}/${unit}.b"
+  basename="$DEPLOYER_BASENAME"
+  path="${deploy_root}/${basename}"
+  path_a="${deploy_root}/${basename}.a"
+  path_b="${deploy_root}/${basename}.b"
 
   if [ "$DEPLOYER_IN_PLACE" -gt 0 ]; then
     test -d "$path"   || barf "missing git checkout: $path"
@@ -60,8 +62,8 @@ main()
   # Determine the currently active and inactive checkouts for this unit.
 
   if [ "$DEPLOYER_IN_PLACE" -gt 0 ]; then
-    target_active="$unit"
-    target_inactive="$unit"
+    target_active="$basename"
+    target_inactive="$basename"
   else
     if [ -L "$path" ]; then
       target_active=`readlink "$path"`
@@ -71,10 +73,10 @@ main()
       barf "failed to find symlink at: $path"
     fi
 
-    if [ "$target_active" = "${unit}.a" ]; then
-      target_inactive="${unit}.b"
+    if [ "$target_active" = "${basename}.a" ]; then
+      target_inactive="${basename}.b"
     else
-      target_inactive="${unit}.a"
+      target_inactive="${basename}.a"
     fi
   fi
 
