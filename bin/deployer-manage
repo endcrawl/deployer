@@ -1,20 +1,25 @@
 #!/bin/sh
 
-usage() { echo "usage: ${0##*/} [-x] [-k path/to/ssh/key] [-c command] [-u user] [-g group] [-b basename] <unit> <git-url> [<branch>]"; }
+usage() { echo "usage: ${0##*/} [-x] [-k path/to/ssh/key] [-c command] [-u user] [-g group] [-b basename] [-r path/to/deply/root] <unit> <git-url> [<branch>]"; }
 
 main()
 {
   DEPLOYER_IN_PLACE=${DEPLOYER_IN_PLACE:-0}
   DEPLOYER_COMMAND=${DEPLOYER_COMMAND:-make}
+  options=""
 
   while [ $# -gt 0 ]; do
     case "$1" in
-         -x) DEPLOYER_IN_PLACE=1    ; shift ;;
-         -k) DEPLOYER_SSH_KEY="$2"  ; shift ; shift ;;
-         -c) DEPLOYER_COMMAND="$2"  ; shift ; shift ;;
-         -u) DEPLOYER_USER="$2"     ; shift ; shift ;;
-         -g) DEPLOYER_GROUP="$2"    ; shift ; shift ;;
-         -b) DEPLOYER_BASENAME="$2" ; shift ; shift ;;
+        -*) options="${options}${1#-}" ;;
+    esac
+    case "$1" in
+         -x) DEPLOYER_IN_PLACE=1       ; shift ;;
+         -k) DEPLOYER_SSH_KEY="$2"     ; shift ; shift ;;
+         -c) DEPLOYER_COMMAND="$2"     ; shift ; shift ;;
+         -u) DEPLOYER_USER="$2"        ; shift ; shift ;;
+         -g) DEPLOYER_GROUP="$2"       ; shift ; shift ;;
+         -b) DEPLOYER_BASENAME="$2"    ; shift ; shift ;;
+         -r) DEPLOYER_DEPLOY_ROOT="$2" ; shift ; shift ;;
          -h) usage ; exit 0 ;;
          -*) barf "unknown option: $1" ;;
           *) break ;;
@@ -26,6 +31,7 @@ main()
   export DEPLOYER_USER
   export DEPLOYER_GROUP
   export DEPLOYER_BASENAME
+  export DEPLOYER_DEPLOY_ROOT
 
   if [ $# -lt 2 ]; then
     usage 1>&2
@@ -74,6 +80,12 @@ main()
                                  safe printf "%s" "$DEPLOYER_IN_PLACE" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_IN_PLACE"
                                  safe printf "%s" "$DEPLOYER_BASENAME" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_BASENAME"
                                  safe printf "%s" "$unit"              > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_UNIT"
+
+  # Only override this global setting if -r was specified.
+
+  test "${options#*r}" = "$options" \
+    && safe rm -f "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_DEPLOY_ROOT" \
+    || safe printf "%s" "$DEPLOYER_DEPLOY_ROOT" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_DEPLOY_ROOT"
 
   # Create a per-unit directory for incoming deployer job requests.
 
