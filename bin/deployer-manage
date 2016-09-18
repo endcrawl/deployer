@@ -10,19 +10,19 @@ main()
 
   while [ $# -gt 0 ]; do
     case "$1" in
-        -*) options="${options}${1#-}" ;;
+      -*) options="${options}${1#-}" ;;
     esac
     case "$1" in
-         -x) DEPLOYER_IN_PLACE=1       ; shift ;;
-         -k) DEPLOYER_SSH_KEY="$2"     ; shift ; shift ;;
-         -c) DEPLOYER_COMMAND="$2"     ; shift ; shift ;;
-         -u) DEPLOYER_USER="$2"        ; shift ; shift ;;
-         -g) DEPLOYER_GROUP="$2"       ; shift ; shift ;;
-         -b) DEPLOYER_BASENAME="$2"    ; shift ; shift ;;
-         -r) DEPLOYER_DEPLOY_ROOT="$2" ; shift ; shift ;;
-         -h) usage ; exit 0 ;;
-         -*) barf "unknown option: $1" ;;
-          *) break ;;
+       -x) DEPLOYER_IN_PLACE=1       ; shift ;;
+       -k) DEPLOYER_SSH_KEY="$2"     ; shift ; shift ;;
+       -c) DEPLOYER_COMMAND="$2"     ; shift ; shift ;;
+       -u) DEPLOYER_USER="$2"        ; shift ; shift ;;
+       -g) DEPLOYER_GROUP="$2"       ; shift ; shift ;;
+       -b) DEPLOYER_BASENAME="$2"    ; shift ; shift ;;
+       -r) DEPLOYER_DEPLOY_ROOT="$2" ; shift ; shift ;;
+       -h) usage ; exit 0 ;;
+       -*) barf "unknown option: $1" ;;
+        *) break ;;
     esac
   done
   export DEPLOYER_IN_PLACE
