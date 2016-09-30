@@ -83,9 +83,10 @@ main()
 
   # Only override this global setting if -r was specified.
 
-  test "${options#*r}" = "$options" \
-    && safe rm -f "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_DEPLOY_ROOT" \
-    || safe printf "%s" "$DEPLOYER_DEPLOY_ROOT" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_DEPLOY_ROOT"
+  if [ "${options#*r}" != "$options" ]; then
+    safe rm -f "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_DEPLOY_ROOT"
+    safe printf "%s" "$DEPLOYER_DEPLOY_ROOT" > "${DEPLOYER_UNITS_DIR}/${unit}/DEPLOYER_DEPLOY_ROOT"
+  fi
 
   # Create a per-unit directory for incoming deployer job requests.
 
