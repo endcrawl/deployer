@@ -17,6 +17,9 @@ safe . deployer-setup-tests
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
+head_revision=`( safe cd "$workdir/foo" && safe git rev-parse HEAD )`
+safe test -n "$head_revision"
+
 # Test: request a new deployment on the new branch (inject a job file into the queue).
 
 safe deploy foo branch1
@@ -42,11 +45,15 @@ safe deploy foo @
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
 # Test: check that redeployment ran even though nothing had changed.
+# Also verify that branch and revision haven't changed.
 
 (
   safe cd "$DEPLOYER_DEPLOY_ROOT"
   safe test -L foo
   safe test "`readlink foo`" = "foo.a"
+  safe cd foo
+  safe test "`git rev-parse HEAD`" = "$head_revision"
+  safe test "`git rev-parse --abbrev-ref HEAD`" = "branch1"
 )
 rc="$?" ; [ "$rc" -ne 0 ] && exit "$rc"
 
