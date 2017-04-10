@@ -49,10 +49,11 @@ main()
   test -n "$commit_old" || barf "error getting current commit hash for: ${target_old}"
   branch_old=`git symbolic-ref HEAD 2>/dev/null`
   branch_old=${branch_old##refs/heads/}
+  original_revision="$revision"
 
-  # If revision is _, try to stay on same branch as active checkout.
+  # If revision is _ or @, try to stay on same branch as active checkout.
 
-  if [ "$revision" = "_" ]; then
+  if [ "$revision" = "_" -o "$revision" = "@" ]; then
     revision="$branch_old"
     test -n "$revision" || barf "error defaulting to active branch: detached checkout?"
   fi
@@ -74,9 +75,12 @@ main()
   test -n "$commit_new" || barf "error getting current revision for: ${target_old}"
 
   # See if the inactive checkout would differ from the active one.
+  # If revision was @, override difference check and always redeploy.
 
   differs=0
-  if [ "x"`git cat-file -t "$commit_old" 2>/dev/null` != "xcommit" ]; then
+  if [ "$original_revision" = "@" ]; then
+    differs=1
+  elif [ "x"`git cat-file -t "$commit_old" 2>/dev/null` != "xcommit" ]; then
     # This commit might not even exist anymore (eg was deleted in force push).
     differs=1
   elif [ "$commit_old" != "$commit_new" ]; then
