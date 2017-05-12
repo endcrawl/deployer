@@ -1,0 +1,34 @@
+#!/bin/sh
+
+main()
+{
+  # Upfront validation.
+
+  safe test -n "$DEPLOYER_QUEUE"
+  safe test -n "$DEPLOYER_STAGE_LOCK"
+
+  # Grab the lock that protects the job-staging operation.
+
+  test "${LOCKED_DEPLOYER_STAGE:-0}" -gt 0 || \
+    safe exec setlock "$DEPLOYER_STAGE_LOCK" env LOCKED_DEPLOYER_STAGE=1 "$0" "$@"
+
+  # Move deploy job files from the per-unit request directories into processing.
+
+  safe cd "$DEPLOYER_QUEUE"
+  safe find req -mindepth 2 -maxdepth 2 -type f | {
+    IFS=/
+    while read req unit file; do
+      unit_escaped=`job_escape "$unit"`
+      safe mv "req/${unit}/${file}" "new/${unit_escaped}.${file}"
+    done
+  }
+}
+
+job_escape() {
+  printf "%s" "$1" | sed -e 's/%/%26/g; s/\//%2f/g; s/\./%2e/g'
+}
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+main "$@"
+exit $?
+
