@@ -30,7 +30,7 @@ main()
   export LOCKED_UNIT
 
   if [ -z "$LOCKED_UNIT" ]; then
-    lockfile="$DEPLOYER_LOCK_DIR"/unit/"$unit".lock
+    lockfile="$DEPLOYER_UNIT_LOCK_DIR"/"$unit".lock
     LOCKED_UNIT="$lockfile" safe exec setlock -n "$lockfile" "$0" "$@"
   else
     shout "locked: $LOCKED_UNIT"
