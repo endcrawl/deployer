@@ -66,7 +66,7 @@ main()
     target_inactive="$basename"
   else
     if [ -L "$path" ]; then
-      target_active=`readlink "$path"`
+      target_active=`safe readlink "$path"` || exit $?
     elif [ -e "$path" ]; then
       barf "non-symlink at: $path"
     else
@@ -95,7 +95,7 @@ main()
     branch=`git symbolic-ref HEAD 2>/dev/null`
     branch="${branch##refs/heads/}"
     branch="${branch:-(detached)}"
-    info=`git log -n 1 --pretty="%h %s" HEAD`
+    info=`safe git log -n 1 --pretty="%h %s" HEAD` || exit $?
     what="${what} ${branch} ${info}"
   fi
 
