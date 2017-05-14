@@ -15,19 +15,15 @@ main()
   test -z "$DEPLOYER_BOUNCED_DIR" && barf "missing environment variable: DEPLOYER_BOUNCED_DIR"
   test -d "$DEPLOYER_BOUNCED_DIR" || barf "deployer bounced directory missing: $DEPLOYER_BOUNCED_DIR"
 
-  safe find -L "$service_root" \
-    -mindepth 1 \
-    -maxdepth 1 \
-    -type d \
-    -a -not -name ".*" |
-  while read svcdir; do
-    svcname="${svcdir#${service_root}/}"
-    test -L "$svcdir/root" || continue
-    test -e "$svcdir/root/.deployed" || continue
-    test "$DEPLOYER_BOUNCED_DIR/$svcname" -nt "$svcdir/root/.deployed" && continue
-    log 2 "bouncing: $svcname"
+  safe cd "$service_root"
+  for svcname in *; do
+    test -d "$svcname" || continue
     (
-      safe cd "$svcdir"
+      safe cd "$svcname"
+      test -L root || continue
+      test -e root/.deployed || continue
+      test "$DEPLOYER_BOUNCED_DIR/$svcname" -nt root/.deployed && continue
+      log 2 "bouncing: $svcname"
       if [ -x bounce ]; then
         safe ./bounce
       else
