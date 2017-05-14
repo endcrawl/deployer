@@ -36,7 +36,7 @@ main()
 
   revision_escaped=`job_escape "$revision"`
   jobdatetime=`date +%Y%m%d.%H%M%S`
-  jobrandom=`od -N 4 -t x4 -A n -v < /dev/urandom | sed -e 's/^ //'`
+  jobrandom=`safe hexdump -n 4 -e '4/4 "%08x"' /dev/urandom` || exit $?
   jobname="${revision_escaped}.${jobdatetime}.${jobrandom}"
 
   # Enqueue a new job file.
