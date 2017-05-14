@@ -48,7 +48,7 @@ main()
 
   # Self-exec to put per-unit settings in environment, unless we've already done that.
 
-  test "$unit" = "$DEPLOYER_UNIT" || safe exec envdir "${DEPLOYER_UNITS_DIR}/${unit}" "$0" "$unit" "$revision" "$@"
+  test "$unit" = "$DEPLOYER_UNIT" || safe exec envdir "${DEPLOYER_UNITS_DIR}/${unit}" "$0" "$unit"
 
   # Require existing .a & .b directories, or a bare directory if we're in update-in-place mode.
 
