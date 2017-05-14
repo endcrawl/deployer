@@ -25,8 +25,7 @@ main()
   safe mkdir -p "$DEPLOYER_DEPLOY_ROOT/.tmp"
 
   test -p "$DEPLOYER_TRIGGER" || {
-    dir=`dirname "$DEPLOYER_TRIGGER"`
-    safe mkdir -p "$dir"
+    safe mkdir -p "${DEPLOYER_TRIGGER%/*}"
     safe mkfifo "$DEPLOYER_TRIGGER"
   }
 
