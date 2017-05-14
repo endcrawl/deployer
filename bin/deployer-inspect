@@ -38,9 +38,8 @@ main()
 
   test "$DEPLOYER_INSPECT_BACKEND" -eq 1 -o -n "$DEPLOYER_DEPLOY_ROOT" || safe . deployer-autoconfigure
 
-  # Validate the config we use.
+  # Validate the global config we use.
 
-  test -z "$DEPLOYER_BASENAME"    && barf "missing environment variable: DEPLOYER_BASENAME"
   test -z "$DEPLOYER_DEPLOY_ROOT" && barf "missing environment variable: DEPLOYER_DEPLOY_ROOT"
   test -d "$DEPLOYER_DEPLOY_ROOT" || barf "deploy root directory missing: $DEPLOYER_DEPLOY_ROOT"
   test -z "$DEPLOYER_UNITS_DIR"   && barf "missing environment variable: DEPLOYER_UNITS_DIR"
@@ -49,6 +48,10 @@ main()
   # Self-exec to put per-unit settings in environment, unless we've already done that.
 
   test "$unit" = "$DEPLOYER_UNIT" || safe exec envdir "${DEPLOYER_UNITS_DIR}/${unit}" "$0" "$unit"
+
+  # Validate the per-unit config we use.
+
+  test -z "$DEPLOYER_BASENAME"    && barf "missing environment variable: DEPLOYER_BASENAME"
 
   # Require existing .a & .b directories, or a bare directory if we're in update-in-place mode.
 
