@@ -53,7 +53,7 @@ main()
 }
 
 job_escape() {
-  sed -e 's/%/%26/g; s/\//%2f/g; s/\./%2e/g' <<EOJOB
+  safe sed -e 's/%/%26/g; s/\//%2f/g; s/\./%2e/g' <<EOJOB
 $1
 EOJOB
 }
