@@ -36,8 +36,8 @@ main()
 
   # Determine the active and inactive checkouts for this unit.
 
-  target_old=`deployer-inspect -b -a "$unit"` || exit $?
-  target_new=`deployer-inspect -b -i "$unit"` || exit $?
+  target_old=`safe deployer-inspect -b -a "$unit"` || exit $?
+  target_new=`safe deployer-inspect -b -i "$unit"` || exit $?
   path_old="${DEPLOYER_DEPLOY_ROOT}/${target_old}"
   path_new="${DEPLOYER_DEPLOY_ROOT}/${target_new}"
 

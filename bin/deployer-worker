@@ -14,8 +14,8 @@ main()
   [ -z "$unit"     ] && barf "cannot parse unit from jobfile: $FSQ_JOB" 100
   [ -z "$revision" ] && barf "cannot parse revision from jobfile: $FSQ_JOB" 100
 
-  unit=`job_unescape "$unit"`
-  revision=`job_unescape "$revision"`
+  unit=`safe job_unescape "$unit"`         || exit $?
+  revision=`safe job_unescape "$revision"` || exit $?
 
   # Validate unit against unsafe chars.
 
