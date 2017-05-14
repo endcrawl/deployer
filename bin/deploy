@@ -34,9 +34,9 @@ main()
 
   # Generate the job file name.
 
-  revision_escaped=`safe job_escape "$revision"`             || exit $?
-  jobdatetime=`safe date +%Y%m%d.%H%M%S`                     || exit $?
-  jobrandom=`safe hexdump -n 4 -e '4/4 "%08x"' /dev/urandom` || exit $?
+  revision_escaped=`safe job_escape "$revision"`               || exit $?
+  jobdatetime=`safe date +%Y%m%d.%H%M%S`                       || exit $?
+  jobrandom=`safe hexdump -n 4 -e '1/4 "%08x"' < /dev/urandom` || exit $?
   jobname="${revision_escaped}.${jobdatetime}.${jobrandom}"
 
   # Enqueue a new job file.
