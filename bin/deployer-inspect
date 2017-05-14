@@ -92,7 +92,7 @@ main()
   if [ "$verbose" -gt 0 ]; then
     export GIT_WORK_TREE="${deploy_root}/${what}"
     export GIT_DIR="${deploy_root}/${what}/.git"
-    branch=`git symbolic-ref HEAD 2>/dev/null`
+    branch=`git symbolic-ref HEAD 2>/dev/null`  # might fail, that's okay
     branch="${branch##refs/heads/}"
     branch="${branch:-(detached)}"
     info=`safe git log -n 1 --pretty="%h %s" HEAD` || exit $?

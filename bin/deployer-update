@@ -47,7 +47,7 @@ main()
   export GIT_DIR="${path_old}/.git"
   commit_old=`safe git rev-parse HEAD`
   test -n "$commit_old" || barf "error getting current commit hash for: ${target_old}"
-  branch_old=`git symbolic-ref HEAD 2>/dev/null`
+  branch_old=`git symbolic-ref HEAD 2>/dev/null`  # might fail, that's okay
   branch_old=${branch_old##refs/heads/}
   original_revision="$revision"
 
