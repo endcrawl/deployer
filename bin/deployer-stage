@@ -18,14 +18,16 @@ main()
   safe find req -mindepth 2 -maxdepth 2 -type f | {
     IFS=/
     while read req unit file; do
-      unit_escaped=`job_escape "$unit"`
+      unit_escaped=`safe job_escape "$unit"` || exit $?
       safe mv "req/${unit}/${file}" "new/${unit_escaped}.${file}"
     done
   }
 }
 
 job_escape() {
-  printf "%s" "$1" | sed -e 's/%/%26/g; s/\//%2f/g; s/\./%2e/g'
+  sed -e 's/%/%26/g; s/\//%2f/g; s/\./%2e/g' <<EOJOB
+$1
+EOJOB
 }
 
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
