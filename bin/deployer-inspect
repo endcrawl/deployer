@@ -4,16 +4,16 @@ usage() { echo "usage: ${0##*/} [-b] [-a|-i] [-v] <unit>"; }
 
 main()
 {
-  what='active'
-  backend=0
-  verbose=0
+  export DEPLOYER_INSPECT_WHAT="${DEPLOYER_INSPECT_WHAT:-active}"
+  export DEPLOYER_INSPECT_BACKEND="${DEPLOYER_INSPECT_BACKEND:-0}"
+  export DEPLOYER_INSPECT_VERBOSE="${DEPLOYER_INSPECT_VERBOSE:-0}"
 
   while [ $# -gt 0 ]; do
     case "$1" in
-         -a) what='active'   ; shift ;;
-         -i) what='inactive' ; shift ;;
-         -b) backend=1       ; shift ;;
-         -v) verbose=1       ; shift ;;
+         -a) DEPLOYER_INSPECT_WHAT='active'   ; shift ;;
+         -i) DEPLOYER_INSPECT_WHAT='inactive' ; shift ;;
+         -b) DEPLOYER_INSPECT_BACKEND=1       ; shift ;;
+         -v) DEPLOYER_INSPECT_VERBOSE=1       ; shift ;;
          -h) usage ; exit 0 ;;
          -*) barf "unknown option: $1" ;;
           *) break ;;
@@ -36,7 +36,7 @@ main()
 
   # Automatically configure unless we're in backend mode.
 
-  test "$backend" -eq 1 -o -n "$DEPLOYER_DEPLOY_ROOT" || safe . deployer-autoconfigure
+  test "$DEPLOYER_INSPECT_BACKEND" -eq 1 -o -n "$DEPLOYER_DEPLOY_ROOT" || safe . deployer-autoconfigure
 
   # Validate the config we use.
 
@@ -88,14 +88,15 @@ main()
 
   # Output our findings.
 
-  case "$what" in
+  case "$DEPLOYER_INSPECT_WHAT" in
     active)   what="$target_active" ;;
     inactive) what="$target_inactive" ;;
+    *) barf "invalid value for what to inspect" ;;
   esac
 
   # In verbose mode, also output commit hash and branch.
 
-  if [ "$verbose" -gt 0 ]; then
+  if [ "$DEPLOYER_INSPECT_VERBOSE" -gt 0 ]; then
     export GIT_WORK_TREE="${deploy_root}/${what}"
     export GIT_DIR="${deploy_root}/${what}/.git"
     branch=`git symbolic-ref HEAD 2>/dev/null`  # might fail, that's okay
