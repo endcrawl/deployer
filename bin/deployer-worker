@@ -52,7 +52,7 @@ main()
 }
 
 job_unescape() {
-  sed -e 's/%%/%/g; s/%2f/\//g; s/%2e/\./g' <<EOJOB
+  safe sed -e 's/%%/%/g; s/%2f/\//g; s/%2e/\./g' <<EOJOB
 $1
 EOJOB
 }
