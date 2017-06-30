@@ -1,0 +1,28 @@
+- [x] Add support to `fsq-run` for using the upstream queue for failures as well.
+  - Currently only uses the upstream for successes.
+  - Should only happen on hard failures. Retries don't need this.
+- [x] Define the mailer service.
+  - Possibly add these new binaries:
+    - [x] `bin/deployer-mailer-service`
+    - [x] `bin/deployer-mailer-queue`
+    - [x] `bin/deployer-mailer-worker`
+  - [x] `Subject:` line should indicate deploy unit, branch, commit hash, commit message, and most importantly success or failure.
+    - These will need to be parsed out of the output, which is probably the trickiest thing about this change.
+    - Look for `^DEPLOYER_STATUS=...` success / failure. If missing, assume the worst (failure). If 99, nothing was done => don't send an email.
+    - Look for `^DEPLOYER_RESULT=...` and parse the parts on success. If no parts, assume nothing was done => don't send an email.
+    - [x] How can we scan for these, then seek back to the beginning of the file?
+      - It's dumb that no standard unix utility rewinds. Had to write a tiny one in perl :/
+    - Example: `[deployer] success: myrepo/master -- deadbeef fixed the widget`
+  - [x] `To:` address should be a per-deployer email group configured in the unit.
+    - Use `DEPLOYER_MAILER_TO`.
+    - Global default should be respected.
+    - If `DEPLOYER_MAILER_TO` isn't defined, then don't send an email at all.
+  - [x] `From:` line should come from global config.
+    - Use `DEPLOYER_MAILER_FROM`.
+  - [x] Email body should be formatted readably.
+    - Probably okay as is, with `Content-Type: text/plain`.
+- [x] Hook deployer successes and failures up to the upstream mailer queue.
+  - Should probably be an optional thing. Tests don't need this mail infrastructure.
+  - [x] `deployer-queue` needs to know whether there's an upstream queue, and modify options accordingly.
+  - [x] `deployer-after-job` needs to pull the upstream trigger. See `xevious/bin/render-queue` for a good example of how to do this.
+- [ ] Verify, through experiment if necessary, that the `sendmail` arguments in `deployer-mailer-worker` are real and work.
