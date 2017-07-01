@@ -1,0 +1,5 @@
+#!/usr/bin/env perl
+# Rewind stdin if it's seekable.
+# Apparently neither dd(1) nor shell redirections can do this?
+seek STDIN, 0, 0 or die "cannot rewind stdin: $!";
+exit 0;
