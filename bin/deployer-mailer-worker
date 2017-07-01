@@ -45,7 +45,7 @@ EORESULT
   # Format email headers.
 
   case "$DEPLOYER_STATUS" in
-    99) exit 0 ;;  # nothing happened, no mail to send
+    99) return 0 ;;  # nothing happened, no mail to send
     0 ) status_text="success" ;;
     * ) status_text="failure" ;;
   esac
