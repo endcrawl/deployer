@@ -77,6 +77,7 @@ main()
 
   if [ $rc -eq 0 ]; then
     inspect=`safe deployer-inspect -b -v -a "$unit"` || exit $?
+    echo "DEPLOYER_RESULT=$unit $inspect"
     log 2 "deployed:" "$unit" "$inspect"
   fi
 
