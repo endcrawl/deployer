@@ -38,7 +38,7 @@ main() {
   # If we didn't encounter it, pick some sensible fallbacks.
 
   DEPLOYER_RESULT=${DEPLOYER_RESULT:-"$unit - $revision $jobdate $jobtime"}
-  read unit_ checkout branch hash message <<EORESULT
+  safe read unit_ checkout branch hash message <<EORESULT
 $DEPLOYER_RESULT
 EORESULT
 
