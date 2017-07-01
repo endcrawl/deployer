@@ -45,9 +45,6 @@ main()
 
   [ "$rc" -eq 0 -a -n "$DEPLOYER_BOUNCER_TRIGGER" ] && trigger-pull "$DEPLOYER_BOUNCER_TRIGGER" >/dev/null 2>&1
 
-  # Ignore an exit code of 99 = there was nothing to deploy.
-
-  [ $rc -eq 99 ] && rc=0
   return $rc
 }
 
@@ -58,6 +55,14 @@ EOJOB
 }
 
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+
 main "$@"
-exit $?
+rc=$?
+
+echo "DEPLOYER_STATUS=$rc"
+
+# Ignore an exit code of 99 = there was nothing to deploy.
+[ $rc -eq 99 ] && rc=0
+
+exit $rc
 
