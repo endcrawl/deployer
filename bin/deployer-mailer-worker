@@ -1,6 +1,66 @@
 #!/bin/sh
 
-. shellsafe || exit 100
+main() {
+  # Parse data out of the job file name.
+
+  jobname="$FSQ_JOB"
+  unit="${jobname%%.*}"      ; jobname="${jobname#*.}"
+  revision="${jobname%%.*}"  ; jobname="${jobname#*.}"
+  jobdate="${jobname%%.*}"   ; jobname="${jobname#*.}"
+  jobtime="${jobname%%.*}"   ; jobname="${jobname#*.}"
+  jobrandom="${jobname%%.*}" ; jobname="${jobname#*.}"
+
+  [ -z "$unit"     ] && barf "cannot parse unit from jobfile: $FSQ_JOB" 100
+  [ -z "$revision" ] && barf "cannot parse revision from jobfile: $FSQ_JOB" 100
+
+  unit=`safe job_unescape "$unit"`         || exit $?
+  revision=`safe job_unescape "$revision"` || exit $?
+
+  # Validate unit against unsafe chars.
+
+  [ "$unit" = "."            ] && barf "invalid unit: $unit"
+  [ "$unit" = ".."           ] && barf "invalid unit: $unit"
+  [ "$unit" != "${unit##*/}" ] && barf "invalid unit: $unit"
+
+  # Default is to assume failure.
+
+  DEPLOYER_STATUS=100
+  DEPLOYER_RESULT=
+
+  while IFS="=" read var rest; do
+    case "$var" in
+      DEPLOYER_STATUS) DEPLOYER_STATUS="$rest" ;;
+      DEPLOYER_RESULT) DEPLOYER_RESULT="$rest" ;;
+    esac
+  done
+
+  # Parse information from DEPLOYER_RESULT.
+  # If we didn't encounter it, pick some sensible fallbacks.
+
+  DEPLOYER_RESULT=${DEPLOYER_RESULT:-"$unit - $revision $jobdate $jobtime"}
+  read unit_ checkout branch hash message <<EORESULT
+$DEPLOYER_RESULT
+EORESULT
+
+  # Format email headers.
+
+  case "$DEPLOYER_STATUS" in
+    99) exit 0 ;;  # nothing happened, no mail to send
+    0 ) status_text="success" ;;
+    * ) status_text="failure" ;;
+  esac
+
+  safe printf "From: $DEPLOYER_MAILER_FROM\n"
+  safe printf "To: $DEPLOYER_MAILER_TO\n"
+  safe printf "Content-Type: text/plain\n"
+  safe printf "Subject: [deployer] $status_text: $unit/$branch -- $hash $message\n"
+  safe printf "\n"
+
+  # Replay full job output as email body.
+
+  safe rewind
+  safe cat
+}
 
 job_unescape() {
   safe sed -e 's/%%/%/g; s/%2f/\//g; s/%2e/\./g' <<EOJOB
@@ -8,63 +68,7 @@ $1
 EOJOB
 }
 
-# Parse data out of the job file name.
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
 
-jobname="$FSQ_JOB"
-unit="${jobname%%.*}"      ; jobname="${jobname#*.}"
-revision="${jobname%%.*}"  ; jobname="${jobname#*.}"
-jobdate="${jobname%%.*}"   ; jobname="${jobname#*.}"
-jobtime="${jobname%%.*}"   ; jobname="${jobname#*.}"
-jobrandom="${jobname%%.*}" ; jobname="${jobname#*.}"
-
-[ -z "$unit"     ] && barf "cannot parse unit from jobfile: $FSQ_JOB" 100
-[ -z "$revision" ] && barf "cannot parse revision from jobfile: $FSQ_JOB" 100
-
-unit=`safe job_unescape "$unit"`         || exit $?
-revision=`safe job_unescape "$revision"` || exit $?
-
-# Validate unit against unsafe chars.
-
-[ "$unit" = "."            ] && barf "invalid unit: $unit"
-[ "$unit" = ".."           ] && barf "invalid unit: $unit"
-[ "$unit" != "${unit##*/}" ] && barf "invalid unit: $unit"
-
-# Default is to assume failure.
-
-DEPLOYER_STATUS=100
-DEPLOYER_RESULT=
-
-while IFS="=" read var rest; do
-  case "$var" in
-    DEPLOYER_STATUS) DEPLOYER_STATUS="$rest" ;;
-    DEPLOYER_RESULT) DEPLOYER_RESULT="$rest" ;;
-  esac
-done
-
-# Parse information from DEPLOYER_RESULT.
-# If we didn't encounter it, pick some sensible fallbacks.
-
-DEPLOYER_RESULT=${DEPLOYER_RESULT:-"$unit - $revision $jobdate $jobtime"}
-read unit_ checkout branch hash message <<EORESULT
-$DEPLOYER_RESULT
-EORESULT
-
-# Format email headers.
-
-case "$DEPLOYER_STATUS" in
-  99) exit 0 ;;  # nothing happened, no mail to send
-  0 ) status_text="success" ;;
-  * ) status_text="failure" ;;
-esac
-
-safe printf "From: $DEPLOYER_MAILER_FROM\n"
-safe printf "To: $DEPLOYER_MAILER_TO\n"
-safe printf "Content-Type: text/plain\n"
-safe printf "Subject: [deployer] $status_text: $unit/$branch -- $hash $message\n"
-safe printf "\n"
-
-# Replay full job output as email body.
-
-safe rewind
-exec cat
+main "$@"
 
