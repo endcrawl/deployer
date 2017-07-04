@@ -55,16 +55,13 @@ EORESULT
     * ) status_text="failure" ;;
   esac
 
-  safe printf "From: $DEPLOYER_MAILER_FROM\n"
-  safe printf "To: $DEPLOYER_MAILER_TO\n"
-  safe printf "Content-Type: text/plain\n"
-  safe printf "Subject: [deployer] $status_text: $unit/$branch -- $hash $message\n"
-  safe printf "\n"
-
   # Replay full job output as email body.
-
   safe rewind
-  safe cat
+  safe "${SENDMAIL:-sendmail}" \
+    -f "$DEPLOYER_MAILER_FROM" \
+    -t "$DEPLOYER_MAILER_TO" \
+    -B "text/plain" \
+    -s "[deployer] $status_text: $unit/$branch -- $hash $message"
 }
 
 job_unescape() {
