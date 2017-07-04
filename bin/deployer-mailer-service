@@ -1,0 +1,11 @@
+#!/bin/sh
+
+. shellsafe     || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+
+safe test -n "$DEPLOYER_CONFIG"
+safe . "$DEPLOYER_CONFIG"
+safe test -n "$DEPLOYER_MAILER_TRIGGER"
+
+exec trigger-listen -v -1 -c 1 "$DEPLOYER_MAILER_TRIGGER" \
+  sh -e -c '. "$0" ; cd "$DEPLOYER_MAILER_QUEUE" ; exec "$@"' "$DEPLOYER_CONFIG" deployer-mailer-queue
+
