@@ -34,6 +34,8 @@ safe mkdir -p "$workdir/$UNIT"
 (
   safe cd "$workdir/$UNIT"
   safe git init .
+  safe git config user.email "deployer@localhost"
+  safe git config user.name "Deployer"
   safe echo "all : " > Makefile
   safe git add Makefile
   safe touch 1.txt
