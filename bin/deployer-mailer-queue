@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
+
+safe test -n "$DEPLOYER_MAILER_QUEUE"
+safe cd "$DEPLOYER_MAILER_QUEUE"
+exec fsq-run \
+  -v \
+  -Q new \
+  -D cur \
+  . deployer-mailer-worker
+
