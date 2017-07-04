@@ -1,14 +1,15 @@
 #!/bin/sh
 
-main()
-{
-  safe test -n "$DEPLOYER_QUEUE"
-  safe deployer-stage
-  safe cd "$DEPLOYER_QUEUE"
-  exec fsq-run -v -Q new -D cur -A deployer-after-job . deployer-worker
-}
-
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
-main "$@"
-exit $?
+
+safe test -n "$DEPLOYER_QUEUE"
+safe deployer-stage
+safe cd "$DEPLOYER_QUEUE"
+FSQ_UPSTREAM="$DEPLOYER_MAILER_QUEUE" exec fsq-run \
+  -v \
+  -U \
+  -Q new \
+  -D cur \
+  -A deployer-after-job \
+  . deployer-worker
 
