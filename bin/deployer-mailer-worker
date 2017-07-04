@@ -57,11 +57,14 @@ EORESULT
 
   # Replay full job output as email body.
   safe rewind
-  safe "${SENDMAIL:-sendmail}" \
-    -f "$DEPLOYER_MAILER_FROM" \
-    -t "$DEPLOYER_MAILER_TO" \
-    -B "text/plain" \
-    -s "[deployer] $status_text: $unit/$branch -- $hash $message"
+  safe "${SENDMAIL:-sendmail}" -t <<EOM
+From: $DEPLOYER_MAILER_FROM
+To: $DEPLOYER_MAILER_TO
+Content-Type: text/plain
+Subject: [deployer] $status_text: $unit/$branch -- $hash $message
+
+`safe cat`
+EOM
 }
 
 job_unescape() {
