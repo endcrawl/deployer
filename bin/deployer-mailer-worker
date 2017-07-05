@@ -26,6 +26,11 @@ main() {
 
   test -z "$DEPLOYER_MAILER_FROM" && barf "missing environment variable: DEPLOYER_MAILER_FROM"
   test -z "$DEPLOYER_MAILER_TO"   && barf "missing environment variable: DEPLOYER_MAILER_TO"
+  test -z "$DEPLOYER_UNITS_DIR"   && barf "missing environment variable: DEPLOYER_UNITS_DIR"
+
+  # Self-exec to put per-unit settings in environment, unless we've already done that.
+
+  test "$unit" = "$DEPLOYER_UNIT" || safe exec envdir "${DEPLOYER_UNITS_DIR}/${unit}" "$0" "$@"
 
   # Default is to assume failure.
 
