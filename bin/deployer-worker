@@ -54,6 +54,11 @@ $1
 EOJOB
 }
 
+# Deposit *all* output, even stderr, into any upstream queue job file.
+if [ -n "$DEPLOYER_MAILER_QUEUE" ]; then
+  exec 2>&1
+fi
+
 . shellsafe || { echo "error sourcing shellsafe." 1>&2 ; exit 100 ; }
 
 main "$@"
