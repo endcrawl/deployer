@@ -61,7 +61,7 @@ EORESULT
 From: $DEPLOYER_MAILER_FROM
 To: $DEPLOYER_MAILER_TO
 Content-Type: text/plain
-Subject: [deployer] $status_text: $unit/$branch -- $hash $message
+Subject: [deployer] $status_text: $unit/$branch -- $hash -- $message
 
 `safe cat`
 EOM
