@@ -60,9 +60,9 @@ EORESULT
     * ) status_text="FAIL" ; status_char='\342\235\214' ;;
   esac
 
-  subject1_encoded=`printf "[deployer] $status_char %s" "$unit/$branch" | base64`
-  subject2_encoded=`printf " (%s) -- %s" "$status_text" "$hash" | base64`
-  subject3_encoded=`printf " -- %s" "$message" | base64`
+  subject1_encoded=`printf "[deployer] $status_char %s" "$unit/$branch" | head -c 54 | base64`
+  subject2_encoded=`printf " (%s) -- %s" "$status_text" "$hash" | head -c 54 | base64`
+  subject3_encoded=`printf " -- %s" "$message" | head -c 54 | base64`
 
   # Replay full job output as email body.
   safe rewind
