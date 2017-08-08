@@ -1,24 +1,21 @@
 ## Deployer - Automated Zero Downtime Deployments
 
-More documentation to come.
+More documentation and packaging to come.
 
 ### Getting Started
 
-Requirements:
-
-- `git`
-- `setlock` and `setuidgid` from `daemontools`
-- `trigger-listen` and `trigger-pull` from `trigger`
-- `fsq-run`
-- `shellsafe`
-
-See that tests pass:
-
-```
-make -B check
+```sh
+which git
+which setlock         # from acg/daemontools-encore
+which setuidgid       # from acg/daemontools-encore
+which trigger-listen  # from acg/trigger
+which trigger-pull    # from acg/trigger
+which fsq-run         # from endcrawl/fsq-run
+which shellsafe       # from endcrawl/daemontools-extras
+make                  # ensure tests pass
 ```
 
-### Usage
+### Usage Notes
 
 Fear not; many of these manual steps will be automated.
 
@@ -39,7 +36,7 @@ Fear not; many of these manual steps will be automated.
 
 - Start managing your first deployment:
 
-```
+```sh
 deployer-manage foo git@github.com:yourname/foo.git
 ```
 
@@ -47,13 +44,13 @@ deployer-manage foo git@github.com:yourname/foo.git
 
 - Request your first automated deployment:
 
-```
+```sh
 deploy foo master
 ```
 
 - Watch it work:
 
-```
+```sh
 tail -n 100 -f /var/service/deployer/log/main/current
 ```
 
