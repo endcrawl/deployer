@@ -1,0 +1,15 @@
+Source: deployer
+Section: devel
+Priority: optional
+Maintainer: Alan Grow <alangrow@gmail.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.7.3.0
+Vcs-Git: git@github.com:endcrawl/deployer.git
+Vcs-Browser: https://github.com/endcrawl/deployer
+
+Package: deployer
+Section: devel
+Architecture: all
+Depends: daemontools (>= 1:1.13), trigger (>= 1:0.68), fsq-run (>= 1:0.1.0), daemontools-extra (>= 1:0.1.0)
+Description: Automated zero-downtime deployments.
+

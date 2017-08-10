@@ -1,0 +1,6 @@
+deployer (1:0.1.0) trusty; urgency=low
+
+  * Initial debianization.
+
+ -- Alan Grow <alangrow@gmail.com>  Thu, 10 Aug 2017 12:31:42 -0600
+

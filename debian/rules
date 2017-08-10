@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+%:
+	dh $@
+
+# `make check` is part of default target. don't run it twice.
+override_dh_auto_test :
+	true
+
+
