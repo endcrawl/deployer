@@ -1,3 +1,9 @@
+deployer (1:0.1.1) trusty; urgency=low
+
+  * Install /etc/deployer.conf.
+
+ -- Alan Grow <alangrow@gmail.com>  Thu, 10 Aug 2017 15:02:22 -0600
+
 deployer (1:0.1.0) trusty; urgency=low
 
   * Initial debianization.
