@@ -13,5 +13,5 @@ install :
 	install -d $(DESTDIR)/etc
 	install -m 0640 $(CURDIR)/etc/deployer.example.conf $(DESTDIR)/etc/deployer.conf
 	install -d $(DESTDIR)/etc/service
-	( cd $(CURDIR)/etc/service && tar cf - . ) | ( cd $(DESTDIR)/etc/service && tar xvf - . )
+	tar cf - etc/service | ( cd $(DESTDIR) && tar xvf - )
 
