@@ -6,13 +6,13 @@ set -e
 # Create privsep users.
 
 getent passwd bouncer >/dev/null ||
-  useradd bouncer -U -c "Bouncer Service" -d /nonexistent -s /usr/sbin/nologin
+  useradd bouncer --system -U -c "Bouncer Service" -d /nonexistent -s /usr/sbin/nologin
 
 getent passwd deployer-mailer >/dev/null ||
-  useradd deployer-mailer -U -c "Deployer Mailer Service" -d /nonexistent -s /usr/sbin/nologin
+  useradd deployer-mailer --system -U -c "Deployer Mailer Service" -d /nonexistent -s /usr/sbin/nologin
 
 getent passwd deployer-log >/dev/null ||
-  useradd deployer-log -U -c "Deployer Logger" -d /nonexistent -s /usr/sbin/nologin
+  useradd deployer-log --system -U -c "Deployer Logger" -d /nonexistent -s /usr/sbin/nologin
 
 # Create groups.
 # TODO emit informational message about adding users to these groups.
