@@ -9,7 +9,7 @@ check :
 
 install :
 	install -m 0755 -o root -g root -d $(DESTDIR)$(PREFIX)/bin
-	find $(CURDIR)/bin -type f -print0 | xargs -0 -n1 -I@ install -m 0755 -o root -g root @ $(DESTDIR)$(PREFIX)/bin
+	install -m 0755 -o root -g root -t $(DESTDIR)$(PREFIX)/bin $(CURDIR)/bin/*
 	install -m 0755 -o root -g root -d $(DESTDIR)/etc
 	install -m 0640 -o root -g root $(CURDIR)/etc/deployer.example.conf $(DESTDIR)/etc/deployer.conf
 	install -m 0755 -o root -g root -d $(DESTDIR)/etc/service
