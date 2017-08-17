@@ -105,5 +105,3 @@ install -d -m 0775 -o root -g deployer-log /var/log/bouncer
 test -z "$DEPLOYER_DEPLOY_ROOT" ||
   install -d -m 0755 -o root -g root "$DEPLOYER_DEPLOY_ROOT"
 
-# TODO install and enable the service using `/usr/sbin/update-service`?
-
