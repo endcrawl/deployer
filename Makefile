@@ -12,4 +12,6 @@ install :
 	find $(CURDIR)/bin -type f -print0 | xargs -0 -n1 -I@ install -m 0755 @ $(DESTDIR)$(PREFIX)/bin
 	install -d $(DESTDIR)/etc
 	install -m 0640 $(CURDIR)/etc/deployer.example.conf $(DESTDIR)/etc/deployer.conf
+	install -d $(DESTDIR)/etc/service
+	( cd $(CURDIR)/etc/service && tar cf - . ) | ( cd $(DESTDIR)/etc/service && tar xvf - . )
 
