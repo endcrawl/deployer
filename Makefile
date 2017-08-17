@@ -13,5 +13,5 @@ install :
 	install -m 0755 -o root -g root -d $(DESTDIR)/etc
 	install -m 0640 -o root -g root $(CURDIR)/etc/deployer.example.conf $(DESTDIR)/etc/deployer.conf
 	install -m 0755 -o root -g root -d $(DESTDIR)/etc/service
-	tar cf - etc/service | ( cd $(DESTDIR) && tar xvf - )
+	tar cf - etc/service --owner root --group root | ( cd $(DESTDIR) && tar xvf - )
 
