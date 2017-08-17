@@ -31,50 +31,50 @@ getent group svc-bouncer >/dev/null ||
 
 # Create state directories.
 
-install -d -m 0755 -u root            -g root            /var/lib/deployer
-install -d -m 0755 -u deployer-mailer -g deployer-mailer /var/lib/deployer-mailer
-install -d -m 0755 -u bouncer         -g bouncer         /var/lib/bouncer
+install -d -m 0755 -o root            -g root            /var/lib/deployer
+install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/lib/deployer-mailer
+install -d -m 0755 -o bouncer         -g bouncer         /var/lib/bouncer
 
 # Create trigger directories.
 
-install -d -m 0755 -u root            -g root            /var/trigger
-install -d -m 0755 -u root            -g root            /var/trigger/deployer
-install -d -m 0755 -u deployer-mailer -g deployer-mailer /var/trigger/deployer-mailer
-install -d -m 0755 -u bouncer         -g bouncer         /var/trigger/bouncer
+install -d -m 0755 -o root            -g root            /var/trigger
+install -d -m 0755 -o root            -g root            /var/trigger/deployer
+install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/trigger/deployer-mailer
+install -d -m 0755 -o bouncer         -g bouncer         /var/trigger/bouncer
 
 # Create lock file directories.
 
-install -d -m 0755 -u root -g root /var/locks/deployer/unit
+install -d -m 0755 -o root -g root /var/locks/deployer/unit
 
 # Create filesystem queue directories.
 
-install -d -m 0755 -u root            -g root            /var/queue
-install -d -m 0755 -u root            -g root            /var/queue/deployer
-install -d -m 3775 -u root            -g deployers       /var/queue/deployer/tmp
-install -d -m 0755 -u root            -g root            /var/queue/deployer/req
-install -d -m 0755 -u root            -g root            /var/queue/deployer/new
-install -d -m 0755 -u root            -g root            /var/queue/deployer/cur
-install -d -m 0755 -u root            -g root            /var/queue/deployer/fail
-install -d -m 0755 -u deployer-mailer -g deployer-mailer /var/queue/deployer-mailer
-install -d -m 0755 -u deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/tmp
-install -d -m 0755 -u deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/new
-install -d -m 0755 -u deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/cur
-install -d -m 0755 -u deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/fail
+install -d -m 0755 -o root            -g root            /var/queue
+install -d -m 0755 -o root            -g root            /var/queue/deployer
+install -d -m 3775 -o root            -g deployers       /var/queue/deployer/tmp
+install -d -m 0755 -o root            -g root            /var/queue/deployer/req
+install -d -m 0755 -o root            -g root            /var/queue/deployer/new
+install -d -m 0755 -o root            -g root            /var/queue/deployer/cur
+install -d -m 0755 -o root            -g root            /var/queue/deployer/fail
+install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer
+install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/tmp
+install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/new
+install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/cur
+install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/fail
 
 # Create daemontools state directories.
 
-install -d -m 0755 -u root -g root /var/lib/supervise/deployer
-install -d -m 0755 -u root -g root /var/lib/supervise/deployer.log
-install -d -m 0755 -u root -g root /var/lib/supervise/deployer-mailer
-install -d -m 0755 -u root -g root /var/lib/supervise/deployer-mailer.log
-install -d -m 0755 -u root -g root /var/lib/supervise/bouncer
-install -d -m 0755 -u root -g root /var/lib/supervise/bouncer.log
+install -d -m 0755 -o root -g root /var/lib/supervise/deployer
+install -d -m 0755 -o root -g root /var/lib/supervise/deployer.log
+install -d -m 0755 -o root -g root /var/lib/supervise/deployer-mailer
+install -d -m 0755 -o root -g root /var/lib/supervise/deployer-mailer.log
+install -d -m 0755 -o root -g root /var/lib/supervise/bouncer
+install -d -m 0755 -o root -g root /var/lib/supervise/bouncer.log
 
 # Create log file directories.
 
-install -d -m 0775 -u root -g deployer-log /var/log/deployer
-install -d -m 0775 -u root -g deployer-log /var/log/deployer-mailer
-install -d -m 0775 -u root -g deployer-log /var/log/bouncer
+install -d -m 0775 -o root -g deployer-log /var/log/deployer
+install -d -m 0775 -o root -g deployer-log /var/log/deployer-mailer
+install -d -m 0775 -o root -g deployer-log /var/log/bouncer
 
 # TODO install and enable the service using `/usr/sbin/update-service`?
 
