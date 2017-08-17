@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-# TODO source /etc/deployer.conf to get configured locations.
+. /etc/deployer.conf
 
 # Create privsep users.
 
@@ -35,31 +35,41 @@ install -d -m 0755 -o root            -g root            /var/lib/deployer
 install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/lib/deployer-mailer
 install -d -m 0755 -o bouncer         -g bouncer         /var/lib/bouncer
 
+test -z "$DEPLOYER_BOUNCED_DIR" ||
+  install -d -m 0755 -o bouncer -g bouncer "$DEPLOYER_BOUNCED_DIR"
+
 # Create trigger directories.
 
-install -d -m 0755 -o root            -g root            /var/trigger
-install -d -m 0755 -o root            -g root            /var/trigger/deployer
-install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/trigger/deployer-mailer
-install -d -m 0755 -o bouncer         -g bouncer         /var/trigger/bouncer
+test -z "$DEPLOYER_TRIGGER" ||
+  install -d -m 0755 -o root -g root "${DEPLOYER_TRIGGER%/*}"
+test -z "$DEPLOYER_MAILER_TRIGGER"  ||
+  install -d -m 0755 -o deployer-mailer -g deployer-mailer "${DEPLOYER_MAILER_TRIGGER%/*}"
+test -z "$DEPLOYER_BOUNCER_TRIGGER" ||
+  install -d -m 0755 -o bouncer -g bouncer "${DEPLOYER_BOUNCER_TRIGGER%/*}"
 
 # Create lock file directories.
 
-install -d -m 0755 -o root -g root /var/locks/deployer/unit
+test -z "$DEPLOYER_UNIT_LOCK_DIR" ||
+  install -d -m 0755 -o root -g root "$DEPLOYER_UNIT_LOCK_DIR"
 
 # Create filesystem queue directories.
 
-install -d -m 0755 -o root            -g root            /var/queue
-install -d -m 0755 -o root            -g root            /var/queue/deployer
-install -d -m 3775 -o root            -g deployers       /var/queue/deployer/tmp
-install -d -m 0755 -o root            -g root            /var/queue/deployer/req
-install -d -m 0755 -o root            -g root            /var/queue/deployer/new
-install -d -m 0755 -o root            -g root            /var/queue/deployer/cur
-install -d -m 0755 -o root            -g root            /var/queue/deployer/fail
-install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer
-install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/tmp
-install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/new
-install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/cur
-install -d -m 0755 -o deployer-mailer -g deployer-mailer /var/queue/deployer-mailer/fail
+test -z "$DEPLOYER_QUEUE" || {
+  install -d -m 0755 -o root -g root      "$DEPLOYER_QUEUE"
+  install -d -m 3775 -o root -g deployers "$DEPLOYER_QUEUE"/tmp
+  install -d -m 0755 -o root -g root      "$DEPLOYER_QUEUE"/req
+  install -d -m 0755 -o root -g root      "$DEPLOYER_QUEUE"/new
+  install -d -m 0755 -o root -g root      "$DEPLOYER_QUEUE"/cur
+  install -d -m 0755 -o root -g root      "$DEPLOYER_QUEUE"/fail
+}
+
+test -z "$DEPLOYER_MAILER_QUEUE" || {
+  install -d -m 0755 -o deployer-mailer -g deployer-mailer "$DEPLOYER_MAILER_QUEUE"
+  install -d -m 0755 -o deployer-mailer -g deployer-mailer "$DEPLOYER_MAILER_QUEUE"/tmp
+  install -d -m 0755 -o deployer-mailer -g deployer-mailer "$DEPLOYER_MAILER_QUEUE"/new
+  install -d -m 0755 -o deployer-mailer -g deployer-mailer "$DEPLOYER_MAILER_QUEUE"/cur
+  install -d -m 0755 -o deployer-mailer -g deployer-mailer "$DEPLOYER_MAILER_QUEUE"/fail
+}
 
 # Create daemontools state directories.
 
@@ -78,7 +88,8 @@ install -d -m 0775 -o root -g deployer-log /var/log/bouncer
 
 # Create the managed deployment root.
 
-install -d -m 0755 -o root -g root /home/deploys
+test -z "$DEPLOYER_DEPLOY_ROOT" ||
+  install -d -m 0755 -o root -g root "$DEPLOYER_DEPLOY_ROOT"
 
 # TODO install and enable the service using `/usr/sbin/update-service`?
 
