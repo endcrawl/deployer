@@ -15,7 +15,6 @@ getent passwd deployer-log >/dev/null ||
   useradd deployer-log --system -U -c "Deployer Logger" -d /nonexistent -s /usr/sbin/nologin
 
 # Create groups.
-# TODO emit informational message about adding users to these groups.
 
 getent group deployers >/dev/null ||
   groupadd deployers
@@ -28,6 +27,15 @@ getent group svc-deployer-mailer >/dev/null ||
 
 getent group svc-bouncer >/dev/null ||
   groupadd svc-bouncer
+
+cat <<EOM
+Consider adding operators to the following groups:
+
+deployers
+svc-deployer
+svc-deployer-mailer
+svc-bouncer
+EOM
 
 # Create state directories.
 
