@@ -76,5 +76,9 @@ install -d -m 0775 -o root -g deployer-log /var/log/deployer
 install -d -m 0775 -o root -g deployer-log /var/log/deployer-mailer
 install -d -m 0775 -o root -g deployer-log /var/log/bouncer
 
+# Create the managed deployment root.
+
+install -d -m 0755 -o root -g root /home/deploys
+
 # TODO install and enable the service using `/usr/sbin/update-service`?
 
