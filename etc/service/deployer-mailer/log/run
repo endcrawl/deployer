@@ -1,0 +1,3 @@
+#!/bin/sh
+test `id -u` -gt 0 || exec setuidgid deployer-log "$0" "$@"
+exec multilog t '+*' s1048576 n64 ./main
