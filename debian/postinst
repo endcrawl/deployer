@@ -5,28 +5,34 @@ set -e
 
 # Create privsep users.
 
+getent group bouncer >/dev/null ||
+  groupadd bouncer -g 64222
 getent passwd bouncer >/dev/null ||
-  useradd bouncer --system -U -c "Bouncer Service" -d /nonexistent -s /usr/sbin/nologin
+  useradd bouncer --system -u 64222 -g bouncer -c "Bouncer Service" -d /nonexistent -s /usr/sbin/nologin
 
+getent group deployer-mailer >/dev/null ||
+  groupadd deployer-mailer -g 64223
 getent passwd deployer-mailer >/dev/null ||
-  useradd deployer-mailer --system -U -c "Deployer Mailer Service" -d /nonexistent -s /usr/sbin/nologin
+  useradd deployer-mailer --system -u 64223 -g deployer-mailer -c "Deployer Mailer Service" -d /nonexistent -s /usr/sbin/nologin
 
+getent group deployer-log >/dev/null ||
+  groupadd deployer-log -g 64224
 getent passwd deployer-log >/dev/null ||
-  useradd deployer-log --system -U -c "Deployer Logger" -d /nonexistent -s /usr/sbin/nologin
+  useradd deployer-log --system -u 64224 -g deployer-log -c "Deployer Logger" -d /nonexistent -s /usr/sbin/nologin
 
-# Create groups.
+# Create operator groups.
 
 getent group deployers >/dev/null ||
-  groupadd deployers
+  groupadd -g 622 deployers
 
 getent group svc-deployer >/dev/null ||
-  groupadd svc-deployer
+  groupadd -g 623 svc-deployer
 
 getent group svc-deployer-mailer >/dev/null ||
-  groupadd svc-deployer-mailer
+  groupadd -g 624 svc-deployer-mailer
 
 getent group svc-bouncer >/dev/null ||
-  groupadd svc-bouncer
+  groupadd -g 625 svc-bouncer
 
 cat <<EOM
 Consider adding operators to the following groups:
