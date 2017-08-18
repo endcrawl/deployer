@@ -10,6 +10,6 @@ Vcs-Browser: https://github.com/endcrawl/deployer
 Package: deployer
 Section: devel
 Architecture: all
-Depends: daemontools (>= 1:1.13), trigger (>= 1:0.68), fsq-run (>= 1:0.1.0), daemontools-extra (>= 1:0.1.0)
+Depends: daemontools (>= 1:1.13), trigger (>= 0:0.68), fsq-run (>= 1:0.1.0), daemontools-extra (>= 1:0.1.0)
 Description: Automated zero-downtime deployments.
 
