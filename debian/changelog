@@ -1,3 +1,9 @@
+deployer (1:0.1.2) trusty; urgency=low
+
+  * Install services.
+
+ -- Alan Grow <alangrow@gmail.com>  Fri, 18 Aug 2017 00:02:05 +0000
+
 deployer (1:0.1.1) trusty; urgency=low
 
   * Install /etc/deployer.conf.
