@@ -105,3 +105,14 @@ install -d -m 0775 -o root -g deployer-log /var/log/bouncer
 test -z "$DEPLOYER_DEPLOY_ROOT" ||
   install -d -m 0755 -o root -g root "$DEPLOYER_DEPLOY_ROOT"
 
+# Register the services.
+
+install -d -m 0755 -o root -g root /service
+
+test -L /service/deployer ||
+  ln -s /etc/service/deployer /service/deployer
+test -L /service/bouncer ||
+  ln -s /etc/service/bouncer /service/bouncer
+test -z "$DEPLOYER_MAILER_QUEUE" || test -L /service/deployer-mailer ||
+  ln -s /etc/service/deployer-mailer /service/deployer-mailer
+
