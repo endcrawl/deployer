@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+# Unregister and stop services.
+
+test ! -L /service/deployer || (
+  cd /service/deployer
+  rm /service/deployer
+  svc -dx . log
+)
+
+test ! -L /service/bouncer || (
+  cd /service/bouncer
+  rm /service/bouncer
+  svc -dx . log
+)
+
+test ! -L /service/deployer-mailer || (
+  cd /service/deployer-mailer
+  rm /service/deployer-mailer
+  svc -dx . log
+)
+
