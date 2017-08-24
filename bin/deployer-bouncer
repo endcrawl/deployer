@@ -21,7 +21,9 @@ main()
     (
       safe cd "$svcname"
       test -L root || continue
-      test root/.deployed -nt "$DEPLOYER_BOUNCED_DIR/$svcname" || continue
+      if [ -e "$DEPLOYER_BOUNCED_DIR/$svcname" -a ! "$DEPLOYER_BOUNCED_DIR/$svcname" -ot root/.deployed ]; then
+        continue
+      fi
       log 2 "bouncing: $svcname"
       if [ -x bounce ]; then
         safe ./bounce
