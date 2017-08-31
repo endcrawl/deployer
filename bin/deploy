@@ -25,6 +25,8 @@ main()
   safe . deployer-autoconfigure
 
   test -z "$DEPLOYER_UNITS_DIR" && barf "missing environment variable: DEPLOYER_UNITS_DIR"
+  test -z "$DEPLOYER_QUEUE"     && barf "missing environment variable: DEPLOYER_QUEUE"
+  test -z "$DEPLOYER_TRIGGER"   && barf "missing environment variable: DEPLOYER_TRIGGER"
 
   # Verify that the unit is actually a managed deployment.
 
@@ -37,17 +39,20 @@ main()
   jobrandom=`safe hexdump -n 4 -e '1/4 "%08x"' < /dev/urandom` || exit $?
   jobname="${revision_escaped}.${jobdatetime}.${jobrandom}"
 
-  # Enqueue deployer job files into each queue.
+  # First enqueue a deployer job file into our local queue.
+
+  safe job_enqueue "$DEPLOYER_QUEUE" "$unit" "$jobname" "$DEPLOYER_TRIGGER"
+
+  # Then enqueue deployer job files into queues for other hosts.
 
   if [ -d "$DEPLOYER_HOSTQUEUES_DIR" ]; then
+    if [ -f "$DEPLOYER_STATE_DIR/hostid" ]; then
+      ourhostid=`safe cat "$DEPLOYER_STATE_DIR/hostid"` || exit $?
+    fi
     for hostqueue in "$DEPLOYER_HOSTQUEUES_DIR"/*; do
+      test -n "$ourhostid" -a "${hostqueue##*/}" = "$ourhostid" && continue
       safe job_enqueue "$hostqueue" "$unit" "$jobname"
-      # TODO pull trigger if this is our own host queue
     done
-  else
-    test -z "$DEPLOYER_QUEUE"   && barf "missing environment variable: DEPLOYER_QUEUE"
-    test -z "$DEPLOYER_TRIGGER" && barf "missing environment variable: DEPLOYER_TRIGGER"
-    safe job_enqueue "$DEPLOYER_QUEUE" "$unit" "$jobname" "$DEPLOYER_TRIGGER"
   fi
 }
 
