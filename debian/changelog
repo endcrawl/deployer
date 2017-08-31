@@ -1,3 +1,9 @@
+deployer (1:0.2.0) trusty; urgency=low
+
+  * Add cluster support.
+
+ -- Alan Grow <alangrow@gmail.com>  Thu, 31 Aug 2017 17:54:05 -0600
+
 deployer (1:0.1.5) trusty; urgency=low
 
   * Fix bug where bouncer would skip the initial bounces.
