@@ -7,6 +7,6 @@ safe . "$DEPLOYER_CONFIG"
 safe test "$DEPLOYER_CONCURRENCY" -ge 0
 safe test -n "$DEPLOYER_TRIGGER"
 
-exec trigger-listen -v -1 -c "$DEPLOYER_CONCURRENCY" "$DEPLOYER_TRIGGER" \
+exec trigger-listen -v -1 -c "$DEPLOYER_CONCURRENCY" -t "${DEPLOYER_RESCAN_INTERVAL:-4294967295}" "$DEPLOYER_TRIGGER" \
   sh -e -c '. "$0" ; cd "$DEPLOYER_QUEUE" ; exec "$@"' "$DEPLOYER_CONFIG" deployer-queue
 
