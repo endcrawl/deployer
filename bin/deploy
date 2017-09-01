@@ -51,6 +51,7 @@ main()
     fi
     for hostqueue in "$DEPLOYER_HOSTQUEUES_DIR"/*; do
       test -n "$ourhostid" -a "${hostqueue##*/}" = "$ourhostid" && continue
+      test -d "$hostqueue/tmp" || continue
       safe job_enqueue "$hostqueue" "$unit" "$jobname"
     done
   fi
