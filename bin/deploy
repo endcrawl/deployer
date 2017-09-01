@@ -60,7 +60,7 @@ job_enqueue() {
   queue="$1"   ; shift
   unit="$1"    ; shift
   jobname="$1" ; shift
-  trigger="$1" ; shift
+  trigger="$1"
   safe touch     "$queue/tmp/$jobname"
   safe chmod g+w "$queue/tmp/$jobname"
   safe mv        "$queue/tmp/$jobname" "$queue/req/$unit/$jobname"
